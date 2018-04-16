@@ -6,6 +6,7 @@ namespace Domain\Model\PurchaseOrder;
 use Domain\Model\Product\Product;
 use Domain\Model\Supplier\Supplier;
 use InvalidArgumentException;
+use LogicException;
 
 final class PurchaseOrder
 {
@@ -24,7 +25,7 @@ final class PurchaseOrder
         $this->supplier = $supplier;
     }
 
-    public static function place(Supplier $supplier): PurchaseOrder
+    public static function create(Supplier $supplier): PurchaseOrder
     {
         return new self($supplier);
     }
@@ -38,6 +39,13 @@ final class PurchaseOrder
         }
 
         $this->lines[] = new Line($product, $quantity);
+    }
+
+    public function place(): void
+    {
+        if (\count($this->lines) < 1) {
+            throw new LogicException('To place a purchase order, it has to have at least one line.');
+        }
     }
 
     public function supplier(): Supplier
