@@ -105,6 +105,21 @@ final class PurchaseOrderTest extends TestCase
         $purchaseOrder->place();
     }
 
+    /**
+     * @test
+     */
+    public function you_can_not_place_the_same_purchase_order_again(): void
+    {
+        $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
+        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(10.0));
+        $purchaseOrder->place();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('already been placed');
+
+        $purchaseOrder->place();
+    }
+
     private function someSupplier(): Supplier
     {
         return new Supplier(

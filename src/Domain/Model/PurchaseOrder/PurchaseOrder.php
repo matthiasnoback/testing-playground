@@ -25,6 +25,11 @@ final class PurchaseOrder
      */
     private $purchaseOrderId;
 
+    /**
+     * @var bool
+     */
+    private $placed = false;
+
     private function __construct(PurchaseOrderId $purchaseOrderId, Supplier $supplier)
     {
         $this->supplierId = $supplier->supplierId();
@@ -49,9 +54,15 @@ final class PurchaseOrder
 
     public function place(): void
     {
+        if ($this->placed) {
+            throw new LogicException('This purchase order has already been placed.');
+        }
+
         if (\count($this->lines) < 1) {
             throw new LogicException('To place a purchase order, it has to have at least one line.');
         }
+
+        $this->placed = true;
     }
 
     public function supplierId(): SupplierId
