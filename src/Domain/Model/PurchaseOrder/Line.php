@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace Domain\Model\PurchaseOrder;
 
 use Domain\Model\Product\Product;
+use Domain\Model\Product\ProductId;
 
 final class Line
 {
     /**
-     * @var Product
+     * @var ProductId
      */
-    private $product;
+    private $productId;
 
     /**
      * @var float
@@ -27,12 +28,12 @@ final class Line
             throw new \InvalidArgumentException('You can only order quantities larger than 0.');
         }
 
-        $this->product = $product;
+        $this->productId = $product->productId();
         $this->quantity = $quantity;
     }
 
-    public function product(): Product
+    public function productId(): ProductId
     {
-        return $this->product;
+        return $this->productId;
     }
 }

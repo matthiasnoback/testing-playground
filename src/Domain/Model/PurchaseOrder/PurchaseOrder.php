@@ -5,35 +5,41 @@ namespace Domain\Model\PurchaseOrder;
 
 use Domain\Model\Product\Product;
 use Domain\Model\Supplier\Supplier;
+use Domain\Model\Supplier\SupplierId;
 use InvalidArgumentException;
 use LogicException;
 
 final class PurchaseOrder
 {
     /**
-     * @var Supplier
+     * @var SupplierId
      */
-    private $supplier;
+    private $supplierId;
 
     /**
      * @var Line[]
      */
     private $lines = [];
+    /**
+     * @var PurchaseOrderId
+     */
+    private $purchaseOrderId;
 
-    private function __construct(Supplier $supplier)
+    private function __construct(PurchaseOrderId $purchaseOrderId, Supplier $supplier)
     {
-        $this->supplier = $supplier;
+        $this->supplierId = $supplier->supplierId();
+        $this->purchaseOrderId = $purchaseOrderId;
     }
 
-    public static function create(Supplier $supplier): PurchaseOrder
+    public static function create(PurchaseOrderId $purchaseOrderId, Supplier $supplier): PurchaseOrder
     {
-        return new self($supplier);
+        return new self($purchaseOrderId, $supplier);
     }
 
     public function addLine(Product $product, float $quantity): void
     {
         foreach ($this->lines as $line) {
-            if ($line->product()->equals($product)) {
+            if ($line->productId()->equals($product->productId())) {
                 throw new InvalidArgumentException('You cannot add the same product twice.');
             }
         }
@@ -48,9 +54,9 @@ final class PurchaseOrder
         }
     }
 
-    public function supplier(): Supplier
+    public function supplierId(): SupplierId
     {
-        return $this->supplier;
+        return $this->supplierId;
     }
 
     /**

@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace Domain\Model\Product;
 
-final class Product
+use Common\Aggregate;
+use Common\AggregateId;
+
+final class Product extends Aggregate
 {
     /**
-     * @var int
+     * @var ProductId
      */
-    private $id;
+    private $productId;
 
     /**
      * @var string
@@ -25,21 +28,26 @@ final class Product
      */
     private $useBatchNumbers;
 
-    public function __construct(int $id, string $name, bool $isStockProduct, bool $useBatchNumbers)
+    public function __construct(ProductId $productId, string $name, bool $isStockProduct, bool $useBatchNumbers)
     {
-        $this->id = $id;
+        $this->productId = $productId;
         $this->name = $name;
         $this->isStockProduct = $isStockProduct;
         $this->useBatchNumbers = $useBatchNumbers;
     }
 
+    public function id(): AggregateId
+    {
+        return $this->productId;
+    }
+
+    public function productId(): ProductId
+    {
+        return $this->productId;
+    }
+
     public function isStockProduct(): bool
     {
         return $this->isStockProduct;
-    }
-
-    public function equals(Product $product): bool
-    {
-        return $this->id === $product->id;
     }
 }

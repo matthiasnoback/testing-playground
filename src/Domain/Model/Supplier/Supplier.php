@@ -6,18 +6,23 @@ namespace Domain\Model\Supplier;
 final class Supplier
 {
     /**
-     * @var int
+     * @var SupplierId
      */
-    private $id;
+    private $supplierId;
 
     /**
      * @var string
      */
     private $name;
 
-    public function __construct(int $id, string $name)
+    public function __construct(SupplierId $supplierId, string $name)
     {
-        $this->id = $id;
+        $this->supplierId = $supplierId;
         $this->name = $name;
+    }
+
+    public function supplierId(): SupplierId
+    {
+        return $this->supplierId;
     }
 }
