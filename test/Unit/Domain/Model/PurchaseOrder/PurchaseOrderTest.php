@@ -33,7 +33,7 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
 
-        $purchaseOrder->addLine($this->someStockProduct(), $someQuantity = 10.0);
+        $purchaseOrder->addLine($this->someStockProduct(), $someQuantity = new Quantity(10.0));
 
         $this->assertCount(1, $purchaseOrder->lines());
     }
@@ -48,7 +48,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('stock');
 
-        $purchaseOrder->addLine($this->aNonStockProduct(), $someQuantity = 10.0);
+        $purchaseOrder->addLine($this->aNonStockProduct(), $someQuantity = new Quantity(10.0));
     }
 
     /**
@@ -61,7 +61,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than 0');
 
-        $purchaseOrder->addLine($this->someStockProduct(), $aNegativeQuantity = -5.0);
+        $purchaseOrder->addLine($this->someStockProduct(), $aNegativeQuantity = new Quantity(-5.0));
     }
 
     /**
@@ -74,7 +74,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than 0');
 
-        $purchaseOrder->addLine($this->someStockProduct(), 0.0);
+        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(0.0));
     }
 
     /**
@@ -84,12 +84,12 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
 
-        $purchaseOrder->addLine($this->someStockProduct(), 10.0);
+        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(10.0));
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('same product');
 
-        $purchaseOrder->addLine($this->someStockProduct(), 5.0);
+        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(5.0));
     }
 
     /**

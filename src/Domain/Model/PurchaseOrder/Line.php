@@ -18,14 +18,10 @@ final class Line
      */
     private $quantity;
 
-    public function __construct(Product $product, float $quantity)
+    public function __construct(Product $product, Quantity $quantity)
     {
         if (!$product->isStockProduct()) {
             throw new \InvalidArgumentException('You can only add stock products to a purchase order.');
-        }
-
-        if ($quantity <= 0) {
-            throw new \InvalidArgumentException('You can only order quantities larger than 0.');
         }
 
         $this->productId = $product->productId();

@@ -36,7 +36,7 @@ final class PurchaseOrder
         return new self($purchaseOrderId, $supplier);
     }
 
-    public function addLine(Product $product, float $quantity): void
+    public function addLine(Product $product, Quantity $quantity): void
     {
         foreach ($this->lines as $line) {
             if ($line->productId()->equals($product->productId())) {
