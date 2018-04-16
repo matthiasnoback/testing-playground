@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Domain\Model\PurchaseOrder;
 
-use Domain\Model\Product\Product;
 use Domain\Model\Product\ProductId;
 use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
@@ -33,22 +32,9 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
 
-        $purchaseOrder->addLine($this->someStockProduct(), $someQuantity = new Quantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), $someQuantity = new Quantity(10.0));
 
         $this->assertCount(1, $purchaseOrder->lines());
-    }
-
-    /**
-     * @test
-     */
-    public function you_can_not_add_a_non_stock_product_to_it(): void
-    {
-        $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('stock');
-
-        $purchaseOrder->addLine($this->aNonStockProduct(), $someQuantity = new Quantity(10.0));
     }
 
     /**
@@ -61,7 +47,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than 0');
 
-        $purchaseOrder->addLine($this->someStockProduct(), $aNegativeQuantity = new Quantity(-5.0));
+        $purchaseOrder->addLine($this->someProductId(), $aNegativeQuantity = new Quantity(-5.0));
     }
 
     /**
@@ -74,7 +60,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than 0');
 
-        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(0.0));
+        $purchaseOrder->addLine($this->someProductId(), new Quantity(0.0));
     }
 
     /**
@@ -84,12 +70,12 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
 
-        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), new Quantity(10.0));
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('same product');
 
-        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(5.0));
+        $purchaseOrder->addLine($this->someProductId(), new Quantity(5.0));
     }
 
     /**
@@ -111,7 +97,7 @@ final class PurchaseOrderTest extends TestCase
     public function you_can_not_place_the_same_purchase_order_again(): void
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
-        $purchaseOrder->addLine($this->someStockProduct(), new Quantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), new Quantity(10.0));
         $purchaseOrder->place();
 
         $this->expectException(LogicException::class);
@@ -128,24 +114,9 @@ final class PurchaseOrderTest extends TestCase
         );
     }
 
-    private function someStockProduct(): Product
+    private function someProductId(): ProductId
     {
-        return new Product(
-            ProductId::fromString('a5aa7b51-7aa9-4344-82ea-8cd9ba8b3655'),
-            'Name of the product',
-            $isStockProduct = true,
-            false
-        );
-    }
-
-    private function aNonStockProduct(): Product
-    {
-        return new Product(
-            ProductId::fromString('c7c1dd3b-95c3-4f98-9080-32e90aac60f2'),
-            'Name of the product',
-            $isStockProduct = false,
-            false
-        );
+        return ProductId::fromString('a5aa7b51-7aa9-4344-82ea-8cd9ba8b3655');
     }
 
     private function somePurchaseOrderId(): PurchaseOrderId

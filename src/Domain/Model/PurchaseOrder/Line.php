@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Domain\Model\PurchaseOrder;
 
-use Domain\Model\Product\Product;
 use Domain\Model\Product\ProductId;
 
 final class Line
@@ -18,13 +17,9 @@ final class Line
      */
     private $quantity;
 
-    public function __construct(Product $product, Quantity $quantity)
+    public function __construct(ProductId $productId, Quantity $quantity)
     {
-        if (!$product->isStockProduct()) {
-            throw new \InvalidArgumentException('You can only add stock products to a purchase order.');
-        }
-
-        $this->productId = $product->productId();
+        $this->productId = $productId;
         $this->quantity = $quantity;
     }
 

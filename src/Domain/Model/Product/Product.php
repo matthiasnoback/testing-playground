@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace Domain\Model\Product;
 
-use Common\Aggregate;
-use Common\AggregateId;
-
-final class Product extends Aggregate
+final class Product
 {
     /**
      * @var ProductId
@@ -34,20 +31,5 @@ final class Product extends Aggregate
         $this->name = $name;
         $this->isStockProduct = $isStockProduct;
         $this->useBatchNumbers = $useBatchNumbers;
-    }
-
-    public function id(): AggregateId
-    {
-        return $this->productId;
-    }
-
-    public function productId(): ProductId
-    {
-        return $this->productId;
-    }
-
-    public function isStockProduct(): bool
-    {
-        return $this->isStockProduct;
     }
 }

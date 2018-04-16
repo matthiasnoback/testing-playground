@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Domain\Model\PurchaseOrder;
 
-use Domain\Model\Product\Product;
+use Domain\Model\Product\ProductId;
 use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
 use InvalidArgumentException;
@@ -41,15 +41,15 @@ final class PurchaseOrder
         return new self($purchaseOrderId, $supplier);
     }
 
-    public function addLine(Product $product, Quantity $quantity): void
+    public function addLine(ProductId $productId, Quantity $quantity): void
     {
         foreach ($this->lines as $line) {
-            if ($line->productId()->equals($product->productId())) {
+            if ($line->productId()->equals($productId)) {
                 throw new InvalidArgumentException('You cannot add the same product twice.');
             }
         }
 
-        $this->lines[] = new Line($product, $quantity);
+        $this->lines[] = new Line($productId, $quantity);
     }
 
     public function place(): void
