@@ -94,6 +94,24 @@ final class PurchaseOrderTest extends TestCase
     /**
      * @test
      */
+    public function it_can_be_placed(): void
+    {
+        $purchaseOrderId = $this->somePurchaseOrderId();
+        $purchaseOrder = PurchaseOrder::create($purchaseOrderId, $this->someSupplier());
+        $purchaseOrder->addLine($this->someProductId(), new Quantity(10.0));
+        $purchaseOrder->place();
+
+        self::assertEquals(
+             [
+                 new PurchaseOrderPlaced($purchaseOrderId)
+             ],
+             $purchaseOrder->recordedEvents()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function you_can_not_place_the_same_purchase_order_again(): void
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());

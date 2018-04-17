@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace Domain\Model\PurchaseOrder;
 
+use Common\Aggregate;
+use Common\AggregateId;
 use Domain\Model\Product\ProductId;
 use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
 use InvalidArgumentException;
 use LogicException;
 
-final class PurchaseOrder
+final class PurchaseOrder extends Aggregate
 {
     /**
      * @var SupplierId
@@ -63,6 +65,13 @@ final class PurchaseOrder
         }
 
         $this->placed = true;
+
+        $this->recordThat(new PurchaseOrderPlaced($this->purchaseOrderId));
+    }
+
+    public function id(): AggregateId
+    {
+        return $this->purchaseOrderId;
     }
 
     public function supplierId(): SupplierId
