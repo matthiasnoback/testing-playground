@@ -36,7 +36,8 @@ final class ReceiptNoteTest extends TestCase
     public function it_can_receive_goods_for_a_given_product_id(): void
     {
         $receiptNoteId = $this->someReceiptNoteId();
-        $receiptNote = ReceiptNote::create($receiptNoteId, $this->somePurchaseOrderId());
+        $purchaseOrderId = $this->somePurchaseOrderId();
+        $receiptNote = ReceiptNote::create($receiptNoteId, $purchaseOrderId);
         // clear recorded events
         $receiptNote->recordedEvents();
 
@@ -47,7 +48,7 @@ final class ReceiptNoteTest extends TestCase
         self::assertCount(1, $receiptNote->lines());
 
         self::assertEquals([
-            new GoodsReceived($receiptNoteId, $productId, $quantity)
+            new GoodsReceived($receiptNoteId, $purchaseOrderId, $productId, $quantity)
         ], $receiptNote->recordedEvents());
     }
 

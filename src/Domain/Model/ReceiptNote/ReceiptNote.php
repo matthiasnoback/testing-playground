@@ -59,7 +59,7 @@ final class ReceiptNote extends Aggregate
     {
         $this->lines[] = new Line($productId, $quantity);
 
-        $this->recordThat(new GoodsReceived($this->receiptNoteId, $productId, $quantity));
+        $this->recordThat(new GoodsReceived($this->receiptNoteId, $this->purchaseOrderId, $productId, $quantity));
     }
 
     public function lines(): array

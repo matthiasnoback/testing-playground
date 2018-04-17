@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Example;
 
 use Application\ReadModel\BalanceRepository;
+use Application\UpdatePurchaseOrder;
 use Application\UpdateStockBalance;
 use Common\EventDispatcher\EventCliLogger;
 use Common\EventDispatcher\EventDispatcher;
@@ -34,6 +35,10 @@ $eventDispatcher->registerSubscriber(
 );
 
 $purchaseOrderRepository = new PurchaseOrderRepository($eventDispatcher);
+
+$updatePurchaseOrderListener = new UpdatePurchaseOrder($purchaseOrderRepository);
+$eventDispatcher->registerSubscriber(GoodsReceived::class, [$updatePurchaseOrderListener, 'whenGoodsReceived']);
+
 $receiptNoteRepository = new ReceiptNoteRepository($eventDispatcher);
 
 $product1 = ProductId::fromString(Uuid::uuid4()->toString());
