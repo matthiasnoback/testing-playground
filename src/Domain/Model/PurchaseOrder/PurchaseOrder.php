@@ -101,6 +101,10 @@ final class PurchaseOrder extends Aggregate
                 $line->processReceipt($quantity);
             }
         }
+
+        if ($this->isFullyDelivered()) {
+            $this->recordThat(new PurchaseOrderCompleted($this->purchaseOrderId));
+        }
     }
 
     public function isFullyDelivered(): bool

@@ -131,15 +131,24 @@ final class PurchaseOrderTest extends TestCase
      */
     public function after_processing_receipts_for_all_ordered_products_it_will_be_fully_delivered(): void
     {
-        $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplier());
+        $purchaseOrderId = $this->somePurchaseOrderId();
+        $purchaseOrder = PurchaseOrder::create($purchaseOrderId, $this->someSupplier());
         $productId = $this->someProductId();
         $orderedQuantity = new OrderedQuantity(10.0);
         $purchaseOrder->addLine($productId, $orderedQuantity);
         $purchaseOrder->place();
+        // clear recorded events
+        $purchaseOrder->recordedEvents();
 
         $purchaseOrder->processReceipt($productId, new ReceiptQuantity($orderedQuantity->asFloat()));
 
         self::assertTrue($purchaseOrder->isFullyDelivered());
+        self::assertEquals(
+            [
+                new PurchaseOrderCompleted($purchaseOrderId)
+            ],
+            $purchaseOrder->recordedEvents()
+        );
     }
 
     /**
