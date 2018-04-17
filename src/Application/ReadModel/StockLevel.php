@@ -17,7 +17,7 @@ final class StockLevel
         $this->quantityInStock = $quantityInStock;
     }
 
-    public static function initial()
+    public static function initial(): StockLevel
     {
         return new StockLevel(0.0);
     }

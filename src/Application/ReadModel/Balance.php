@@ -24,7 +24,7 @@ final class Balance
         $this->stockLevel = $stockLevel;
     }
 
-    public static function fromScratch(ProductId $productId)
+    public static function fromScratch(ProductId $productId): Balance
     {
         return new self($productId, StockLevel::initial());
     }

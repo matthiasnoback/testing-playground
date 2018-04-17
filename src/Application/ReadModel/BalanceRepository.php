@@ -12,6 +12,7 @@ final class BalanceRepository
      * @var Balance[]
      */
     private $balances = [];
+
     /**
      * @var EventDispatcher
      */
