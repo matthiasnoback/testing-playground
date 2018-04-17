@@ -13,7 +13,7 @@ final class Line
     private $productId;
 
     /**
-     * @var float
+     * @var Quantity
      */
     private $quantity;
 
