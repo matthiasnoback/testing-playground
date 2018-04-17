@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Example;
 
+use Application\ReadModel\BalanceRepository;
+use Application\UpdateStockBalance;
 use Common\EventDispatcher\EventCliLogger;
 use Common\EventDispatcher\EventDispatcher;
 use Domain\Model\Product\ProductId;
@@ -10,6 +12,7 @@ use Domain\Model\PurchaseOrder\PurchaseOrder;
 use Domain\Model\PurchaseOrder\PurchaseOrderId;
 use Domain\Model\PurchaseOrder\PurchaseOrderRepository;
 use Domain\Model\PurchaseOrder\Quantity;
+use Domain\Model\ReceiptNote\GoodsReceived;
 use Domain\Model\ReceiptNote\ReceiptNote;
 use Domain\Model\ReceiptNote\ReceiptNoteId;
 use Domain\Model\ReceiptNote\ReceiptNoteRepository;
@@ -21,7 +24,13 @@ require __DIR__ . '/../bootstrap.php';
 
 $eventDispatcher = new EventDispatcher();
 $eventDispatcher->subscribeToAllEvents(new EventCliLogger());
-$eventDispatcher->registerSubscriber(ExampleAggregateCreated::class, new ExampleAggregateCreatedSubscriber());
+
+$balanceRepository = new BalanceRepository($eventDispatcher);
+$updateStockBalanceListener = new UpdateStockBalance($balanceRepository);
+$eventDispatcher->registerSubscriber(
+    GoodsReceived::class,
+    [$updateStockBalanceListener, 'whenGoodsReceived']
+);
 
 $purchaseOrderRepository = new PurchaseOrderRepository($eventDispatcher);
 $receiptNoteRepository = new ReceiptNoteRepository($eventDispatcher);
@@ -42,8 +51,13 @@ $purchaseOrder->place();
 
 $purchaseOrderRepository->save($purchaseOrder);
 
-$receiptNote = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toString()), $purchaseOrder->purchaseOrderId());
-$receiptNote->receive($product1, new Quantity(5.0));
-$receiptNote->receive($product2, new Quantity(2.0));
+$receiptNote1 = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toString()), $purchaseOrder->purchaseOrderId());
+$receiptNote1->receive($product1, new Quantity(5.0));
+$receiptNote1->receive($product2, new Quantity(2.0));
 
-$receiptNoteRepository->save($receiptNote);
+$receiptNoteRepository->save($receiptNote1);
+
+$receiptNote2 = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toString()), $purchaseOrder->purchaseOrderId());
+$receiptNote2->receive($product1, new Quantity(5.0));
+$receiptNote2->receive($product2, new Quantity(3.0));
+$receiptNoteRepository->save($receiptNote2);

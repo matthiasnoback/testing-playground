@@ -18,4 +18,9 @@ final class Quantity
 
         $this->quantity = $quantity;
     }
+
+    public function asFloat(): float
+    {
+        return $this->quantity;
+    }
 }
