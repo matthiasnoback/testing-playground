@@ -37,6 +37,14 @@ final class Balance
         );
     }
 
+    public function undoReceipt(ReceiptQuantity $quantity): Balance
+    {
+        return new self(
+            $this->productId,
+            $this->stockLevel->subtract($quantity->asFloat())
+        );
+    }
+
     public function productId(): ProductId
     {
         return $this->productId;

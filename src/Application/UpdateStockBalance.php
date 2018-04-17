@@ -5,6 +5,7 @@ namespace Application;
 
 use Application\ReadModel\BalanceRepository;
 use Domain\Model\ReceiptNote\GoodsReceived;
+use Domain\Model\ReceiptNote\ReceiptUndone;
 
 final class UpdateStockBalance
 {
@@ -23,6 +24,15 @@ final class UpdateStockBalance
         $currentBalance = $this->balanceRepository->getBalanceFor($goodsReceived->productId());
 
         $updatedBalance = $currentBalance->processReceipt($goodsReceived->quantity());
+
+        $this->balanceRepository->save($updatedBalance);
+    }
+
+    public function whenReceiptUndone(ReceiptUndone $receiptUndone): void
+    {
+        $currentBalance = $this->balanceRepository->getBalanceFor($receiptUndone->productId());
+
+        $updatedBalance = $currentBalance->undoReceipt($receiptUndone->quantity());
 
         $this->balanceRepository->save($updatedBalance);
     }

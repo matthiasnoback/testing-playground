@@ -62,6 +62,13 @@ final class ReceiptNote extends Aggregate
         $this->recordThat(new GoodsReceived($this->receiptNoteId, $this->purchaseOrderId, $productId, $quantity));
     }
 
+    public function undo(): void
+    {
+        foreach ($this->lines as $line) {
+            $this->recordThat(new ReceiptUndone($this->purchaseOrderId, $line->productId(), $line->quantity()));
+        }
+    }
+
     public function lines(): array
     {
         return $this->lines;

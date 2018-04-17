@@ -19,15 +19,15 @@ final class Line
     private $quantity;
 
     /**
-     * @var OpenQuantity
+     * @var QuantityReceived
      */
-    private $quantityOpen;
+    private $quantityReceived;
 
     public function __construct(ProductId $productId, OrderedQuantity $quantity)
     {
         $this->productId = $productId;
         $this->quantity = $quantity;
-        $this->quantityOpen = new OpenQuantity($quantity->asFloat());
+        $this->quantityReceived = new QuantityReceived(0.0);
     }
 
     public function productId(): ProductId
@@ -37,11 +37,16 @@ final class Line
 
     public function processReceipt(ReceiptQuantity $quantity): void
     {
-        $this->quantityOpen = $this->quantityOpen->subtract($quantity);
+        $this->quantityReceived = $this->quantityReceived->add($quantity);
+    }
+
+    public function undoReceipt($quantity): void
+    {
+        $this->quantityReceived = $this->quantityReceived->subtract($quantity);
     }
 
     public function isFullyDelivered(): bool
     {
-        return $this->quantityOpen->asFloat() === 0.0;
+        return $this->quantityReceived->asFloat() >= $this->quantity->asFloat();
     }
 }

@@ -5,7 +5,7 @@ namespace Domain\Model\PurchaseOrder;
 
 use Domain\Model\ReceiptNote\ReceiptQuantity;
 
-final class OpenQuantity
+final class QuantityReceived
 {
     /**
      * @var float
@@ -15,7 +15,7 @@ final class OpenQuantity
     public function __construct(float $quantity)
     {
         if ($quantity < 0) {
-            throw new \InvalidArgumentException('You can only order quantities larger than or equal to 0.');
+            throw new \InvalidArgumentException('Quantity received should be larger than or equal to 0.');
         }
 
         $this->quantity = $quantity;
@@ -26,7 +26,12 @@ final class OpenQuantity
         return $this->quantity;
     }
 
-    public function subtract(ReceiptQuantity $quantity): OpenQuantity
+    public function add(ReceiptQuantity $quantity): QuantityReceived
+    {
+        return new self($this->quantity + $quantity->asFloat());
+    }
+
+    public function subtract(ReceiptQuantity $quantity): QuantityReceived
     {
         return new self($this->quantity - $quantity->asFloat());
     }

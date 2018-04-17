@@ -106,6 +106,21 @@ final class PurchaseOrder extends Aggregate
         }
     }
 
+    public function undoReceipt(ProductId $productId, ReceiptQuantity $quantity): void
+    {
+        $wasFullyReceived = $this->isFullyDelivered();
+
+        foreach ($this->lines as $line) {
+            if ($line->productId()->equals($productId)) {
+                $line->undoReceipt($quantity);
+            }
+        }
+
+        if ($wasFullyReceived && !$this->isFullyDelivered()) {
+            $this->recordThat(new PurchaseOrderReopened($this->purchaseOrderId));
+        }
+    }
+
     public function isFullyDelivered(): bool
     {
         foreach ($this->lines as $line) {

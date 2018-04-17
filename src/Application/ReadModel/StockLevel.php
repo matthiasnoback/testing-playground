@@ -27,6 +27,13 @@ final class StockLevel
         );
     }
 
+    public function subtract(float $quantity): StockLevel
+    {
+        return new self(
+            $this->quantityInStock - $quantity
+        );
+    }
+
     public function asFloat(): float
     {
         return $this->quantityInStock;

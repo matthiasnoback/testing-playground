@@ -4,9 +4,15 @@ declare(strict_types=1);
 namespace Domain\Model\ReceiptNote;
 
 use Domain\Model\Product\ProductId;
+use Domain\Model\PurchaseOrder\PurchaseOrderId;
 
-final class Line
+final class ReceiptUndone
 {
+    /**
+     * @var PurchaseOrderId
+     */
+    private $purchaseOrderId;
+
     /**
      * @var ProductId
      */
@@ -17,10 +23,16 @@ final class Line
      */
     private $quantity;
 
-    public function __construct(ProductId $productId, ReceiptQuantity $quantity)
+    public function __construct(PurchaseOrderId $purchaseOrderId, ProductId $productId, ReceiptQuantity $quantity)
     {
+        $this->purchaseOrderId = $purchaseOrderId;
         $this->productId = $productId;
         $this->quantity = $quantity;
+    }
+
+    public function purchaseOrderId(): PurchaseOrderId
+    {
+        return $this->purchaseOrderId;
     }
 
     public function productId(): ProductId

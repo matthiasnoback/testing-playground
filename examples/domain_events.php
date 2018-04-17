@@ -18,6 +18,7 @@ use Domain\Model\ReceiptNote\ReceiptNote;
 use Domain\Model\ReceiptNote\ReceiptNoteId;
 use Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Domain\Model\ReceiptNote\ReceiptQuantity;
+use Domain\Model\ReceiptNote\ReceiptUndone;
 use Domain\Model\Supplier\SupplierId;
 use Ramsey\Uuid\Uuid;
 
@@ -32,11 +33,16 @@ $eventDispatcher->registerSubscriber(
     GoodsReceived::class,
     [$updateStockBalanceListener, 'whenGoodsReceived']
 );
+$eventDispatcher->registerSubscriber(
+    ReceiptUndone::class,
+    [$updateStockBalanceListener, 'whenReceiptUndone']
+);
 
 $purchaseOrderRepository = new PurchaseOrderRepository($eventDispatcher);
 
 $updatePurchaseOrderListener = new UpdatePurchaseOrder($purchaseOrderRepository);
 $eventDispatcher->registerSubscriber(GoodsReceived::class, [$updatePurchaseOrderListener, 'whenGoodsReceived']);
+$eventDispatcher->registerSubscriber(ReceiptUndone::class, [$updatePurchaseOrderListener, 'whenReceiptUndone']);
 
 $receiptNoteRepository = new ReceiptNoteRepository($eventDispatcher);
 
@@ -63,3 +69,7 @@ $receiptNote2 = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toS
 $receiptNote2->receive($product1, new ReceiptQuantity(5.0));
 $receiptNote2->receive($product2, new ReceiptQuantity(3.0));
 $receiptNoteRepository->save($receiptNote2);
+
+$receiptNote2->undo();
+$receiptNoteRepository->save($receiptNote2);
+
