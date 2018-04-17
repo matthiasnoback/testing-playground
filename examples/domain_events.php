@@ -5,6 +5,16 @@ namespace Example;
 
 use Common\EventDispatcher\EventCliLogger;
 use Common\EventDispatcher\EventDispatcher;
+use Domain\Model\Product\ProductId;
+use Domain\Model\PurchaseOrder\PurchaseOrder;
+use Domain\Model\PurchaseOrder\PurchaseOrderId;
+use Domain\Model\PurchaseOrder\PurchaseOrderRepository;
+use Domain\Model\PurchaseOrder\Quantity;
+use Domain\Model\ReceiptNote\ReceiptNote;
+use Domain\Model\ReceiptNote\ReceiptNoteId;
+use Domain\Model\ReceiptNote\ReceiptNoteRepository;
+use Domain\Model\Supplier\Supplier;
+use Domain\Model\Supplier\SupplierId;
 use Ramsey\Uuid\Uuid;
 
 require __DIR__ . '/../bootstrap.php';
@@ -13,12 +23,27 @@ $eventDispatcher = new EventDispatcher();
 $eventDispatcher->subscribeToAllEvents(new EventCliLogger());
 $eventDispatcher->registerSubscriber(ExampleAggregateCreated::class, new ExampleAggregateCreatedSubscriber());
 
-$exampleAggregateRepository = new ExampleAggregateRepository($eventDispatcher);
+$purchaseOrderRepository = new PurchaseOrderRepository($eventDispatcher);
+$receiptNoteRepository = new ReceiptNoteRepository($eventDispatcher);
 
-$aggregate = new ExampleAggregate(
-    ExampleAggregateId::fromString(
-        Uuid::uuid4()->toString()
+$product1 = ProductId::fromString(Uuid::uuid4()->toString());
+$product2 = ProductId::fromString(Uuid::uuid4()->toString());
+
+$purchaseOrder = PurchaseOrder::create(
+    PurchaseOrderId::fromString(Uuid::uuid4()->toString()),
+    new Supplier(
+        SupplierId::fromString(Uuid::uuid4()->toString()),
+        'Name of the supplier'
     )
 );
+$purchaseOrder->addLine($product1, new Quantity(10.0));
+$purchaseOrder->addLine($product2, new Quantity(5.0));
+$purchaseOrder->place();
 
-$exampleAggregateRepository->save($aggregate);
+$purchaseOrderRepository->save($purchaseOrder);
+
+$receiptNote = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toString()), $purchaseOrder->purchaseOrderId());
+$receiptNote->receive($product1, new Quantity(5.0));
+$receiptNote->receive($product2, new Quantity(2.0));
+
+$receiptNoteRepository->save($receiptNote);

@@ -74,6 +74,11 @@ final class PurchaseOrder extends Aggregate
         return $this->purchaseOrderId;
     }
 
+    public function purchaseOrderId(): PurchaseOrderId
+    {
+        return $this->purchaseOrderId;
+    }
+
     public function supplierId(): SupplierId
     {
         return $this->supplierId;
