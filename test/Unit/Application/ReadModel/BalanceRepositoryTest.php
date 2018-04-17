@@ -5,7 +5,7 @@ namespace Application\ReadModel;
 
 use Common\EventDispatcher\EventDispatcher;
 use Domain\Model\Product\ProductId;
-use Domain\Model\PurchaseOrder\Quantity;
+use Domain\Model\ReceiptNote\ReceiptQuantity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,7 +35,7 @@ final class BalanceRepositoryTest extends TestCase
         $balanceRepository = new BalanceRepository(new EventDispatcher());
         $productId = $this->someProductId();
         $balance = $balanceRepository->getBalanceFor($productId);
-        $balance = $balance->processReceipt(new Quantity(10.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(10.0));
 
         $balanceRepository->save($balance);
 

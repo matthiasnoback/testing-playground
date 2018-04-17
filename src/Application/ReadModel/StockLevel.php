@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Application\ReadModel;
 
-use Domain\Model\PurchaseOrder\Quantity;
-
 final class StockLevel
 {
     /**
@@ -22,10 +20,10 @@ final class StockLevel
         return new StockLevel(0.0);
     }
 
-    public function add(Quantity $quantity): StockLevel
+    public function add(float $quantity): StockLevel
     {
         return new self(
-            $this->quantityInStock + $quantity->asFloat()
+            $this->quantityInStock + $quantity
         );
     }
 

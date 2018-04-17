@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Application\ReadModel;
 
 use Domain\Model\Product\ProductId;
-use Domain\Model\PurchaseOrder\Quantity;
+use Domain\Model\ReceiptNote\ReceiptQuantity;
 
 final class Balance
 {
@@ -29,11 +29,11 @@ final class Balance
         return new self($productId, StockLevel::initial());
     }
 
-    public function processReceipt(Quantity $quantity): Balance
+    public function processReceipt(ReceiptQuantity $quantity): Balance
     {
         return new self(
             $this->productId,
-            $this->stockLevel->add($quantity)
+            $this->stockLevel->add($quantity->asFloat())
         );
     }
 

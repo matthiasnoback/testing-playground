@@ -6,6 +6,7 @@ namespace Domain\Model\PurchaseOrder;
 use Common\Aggregate;
 use Common\AggregateId;
 use Domain\Model\Product\ProductId;
+use Domain\Model\ReceiptNote\ReceiptQuantity;
 use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
 use InvalidArgumentException;
@@ -13,6 +14,11 @@ use LogicException;
 
 final class PurchaseOrder extends Aggregate
 {
+    /**
+     * @var PurchaseOrderId
+     */
+    private $purchaseOrderId;
+
     /**
      * @var SupplierId
      */
@@ -22,10 +28,6 @@ final class PurchaseOrder extends Aggregate
      * @var Line[]
      */
     private $lines = [];
-    /**
-     * @var PurchaseOrderId
-     */
-    private $purchaseOrderId;
 
     /**
      * @var bool
@@ -43,7 +45,7 @@ final class PurchaseOrder extends Aggregate
         return new self($purchaseOrderId, $supplier);
     }
 
-    public function addLine(ProductId $productId, Quantity $quantity): void
+    public function addLine(ProductId $productId, OrderedQuantity $quantity): void
     {
         foreach ($this->lines as $line) {
             if ($line->productId()->equals($productId)) {
@@ -90,5 +92,25 @@ final class PurchaseOrder extends Aggregate
     public function lines(): array
     {
         return $this->lines;
+    }
+
+    public function processReceipt(ProductId $productId, ReceiptQuantity $quantity): void
+    {
+        foreach ($this->lines as $line) {
+            if ($line->productId()->equals($productId)) {
+                $line->processReceipt($quantity);
+            }
+        }
+    }
+
+    public function isFullyDelivered(): bool
+    {
+        foreach ($this->lines as $line) {
+            if (!$line->isFullyDelivered()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

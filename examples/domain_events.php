@@ -11,11 +11,12 @@ use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\PurchaseOrder;
 use Domain\Model\PurchaseOrder\PurchaseOrderId;
 use Domain\Model\PurchaseOrder\PurchaseOrderRepository;
-use Domain\Model\PurchaseOrder\Quantity;
+use Domain\Model\PurchaseOrder\OrderedQuantity;
 use Domain\Model\ReceiptNote\GoodsReceived;
 use Domain\Model\ReceiptNote\ReceiptNote;
 use Domain\Model\ReceiptNote\ReceiptNoteId;
 use Domain\Model\ReceiptNote\ReceiptNoteRepository;
+use Domain\Model\ReceiptNote\ReceiptQuantity;
 use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
 use Ramsey\Uuid\Uuid;
@@ -45,19 +46,19 @@ $purchaseOrder = PurchaseOrder::create(
         'Name of the supplier'
     )
 );
-$purchaseOrder->addLine($product1, new Quantity(10.0));
-$purchaseOrder->addLine($product2, new Quantity(5.0));
+$purchaseOrder->addLine($product1, new OrderedQuantity(10.0));
+$purchaseOrder->addLine($product2, new OrderedQuantity(5.0));
 $purchaseOrder->place();
 
 $purchaseOrderRepository->save($purchaseOrder);
 
 $receiptNote1 = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toString()), $purchaseOrder->purchaseOrderId());
-$receiptNote1->receive($product1, new Quantity(5.0));
-$receiptNote1->receive($product2, new Quantity(2.0));
+$receiptNote1->receive($product1, new ReceiptQuantity(5.0));
+$receiptNote1->receive($product2, new ReceiptQuantity(2.0));
 
 $receiptNoteRepository->save($receiptNote1);
 
 $receiptNote2 = ReceiptNote::create(ReceiptNoteId::fromString(Uuid::uuid4()->toString()), $purchaseOrder->purchaseOrderId());
-$receiptNote2->receive($product1, new Quantity(5.0));
-$receiptNote2->receive($product2, new Quantity(3.0));
+$receiptNote2->receive($product1, new ReceiptQuantity(5.0));
+$receiptNote2->receive($product2, new ReceiptQuantity(3.0));
 $receiptNoteRepository->save($receiptNote2);

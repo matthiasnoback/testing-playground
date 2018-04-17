@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Domain\Model\ReceiptNote;
 
 use Domain\Model\Product\ProductId;
-use Domain\Model\PurchaseOrder\Quantity;
 
 final class GoodsReceived
 {
@@ -19,11 +18,11 @@ final class GoodsReceived
     private $productId;
 
     /**
-     * @var Quantity
+     * @var ReceiptQuantity
      */
     private $quantity;
 
-    public function __construct(ReceiptNoteId $receiptNoteId, ProductId $productId, Quantity $quantity)
+    public function __construct(ReceiptNoteId $receiptNoteId, ProductId $productId, ReceiptQuantity $quantity)
     {
         $this->receiptNoteId = $receiptNoteId;
         $this->productId = $productId;
@@ -35,7 +34,7 @@ final class GoodsReceived
         return $this->productId;
     }
 
-    public function quantity(): Quantity
+    public function quantity(): ReceiptQuantity
     {
         return $this->quantity;
     }

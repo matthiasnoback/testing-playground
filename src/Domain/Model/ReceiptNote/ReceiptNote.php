@@ -7,7 +7,6 @@ use Common\Aggregate;
 use Common\AggregateId;
 use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\PurchaseOrderId;
-use Domain\Model\PurchaseOrder\Quantity;
 
 final class ReceiptNote extends Aggregate
 {
@@ -56,7 +55,7 @@ final class ReceiptNote extends Aggregate
         return $this->purchaseOrderId;
     }
 
-    public function receive(ProductId $productId, Quantity $quantity): void
+    public function receive(ProductId $productId, ReceiptQuantity $quantity): void
     {
         $this->lines[] = new Line($productId, $quantity);
 

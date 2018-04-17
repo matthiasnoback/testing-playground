@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Domain\Model\PurchaseOrder;
 
-final class Quantity
+final class OrderedQuantity
 {
     /**
      * @var float

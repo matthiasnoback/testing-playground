@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Application\ReadModel;
 
 use Domain\Model\Product\ProductId;
-use Domain\Model\PurchaseOrder\Quantity;
+use Domain\Model\ReceiptNote\ReceiptQuantity;
 use PHPUnit\Framework\TestCase;
 
 final class BalanceTest extends TestCase
@@ -29,7 +29,7 @@ final class BalanceTest extends TestCase
         $productId = $this->someProductId();
         $balance = Balance::fromScratch($productId);
 
-        $balance = $balance->processReceipt(new Quantity(10.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(10.0));
 
         self::assertEquals($productId, $balance->productId());
         self::assertEquals(10.0, $balance->stockLevel()->asFloat());
@@ -43,8 +43,8 @@ final class BalanceTest extends TestCase
         $productId = $this->someProductId();
         $balance = Balance::fromScratch($productId);
 
-        $balance = $balance->processReceipt(new Quantity(10.0));
-        $balance = $balance->processReceipt(new Quantity(5.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(10.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(5.0));
 
         self::assertEquals($productId, $balance->productId());
         self::assertEquals(15.0, $balance->stockLevel()->asFloat());

@@ -5,7 +5,6 @@ namespace Domain\Model\ReceiptNote;
 
 use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\PurchaseOrderId;
-use Domain\Model\PurchaseOrder\Quantity;
 use PHPUnit\Framework\TestCase;
 
 final class ReceiptNoteTest extends TestCase
@@ -42,7 +41,7 @@ final class ReceiptNoteTest extends TestCase
         $receiptNote->recordedEvents();
 
         $productId = $this->someProductId();
-        $quantity = new Quantity(10.0);
+        $quantity = new ReceiptQuantity(10.0);
         $receiptNote->receive($productId, $quantity);
 
         self::assertCount(1, $receiptNote->lines());
