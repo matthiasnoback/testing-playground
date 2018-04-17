@@ -12,7 +12,7 @@ final class StockLevel
      */
     private $quantityInStock;
 
-    public function __construct(float $quantityInStock)
+    private function __construct(float $quantityInStock)
     {
         $this->quantityInStock = $quantityInStock;
     }
