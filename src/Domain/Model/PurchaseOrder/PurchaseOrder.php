@@ -7,7 +7,6 @@ use Common\Aggregate;
 use Common\AggregateId;
 use Domain\Model\Product\ProductId;
 use Domain\Model\ReceiptNote\ReceiptQuantity;
-use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
 use InvalidArgumentException;
 use LogicException;
@@ -34,15 +33,15 @@ final class PurchaseOrder extends Aggregate
      */
     private $placed = false;
 
-    private function __construct(PurchaseOrderId $purchaseOrderId, Supplier $supplier)
+    private function __construct(PurchaseOrderId $purchaseOrderId, SupplierId $supplierId)
     {
-        $this->supplierId = $supplier->supplierId();
+        $this->supplierId = $supplierId;
         $this->purchaseOrderId = $purchaseOrderId;
     }
 
-    public static function create(PurchaseOrderId $purchaseOrderId, Supplier $supplier): PurchaseOrder
+    public static function create(PurchaseOrderId $purchaseOrderId, SupplierId $supplierId): PurchaseOrder
     {
-        return new self($purchaseOrderId, $supplier);
+        return new self($purchaseOrderId, $supplierId);
     }
 
     public function addLine(ProductId $productId, OrderedQuantity $quantity): void

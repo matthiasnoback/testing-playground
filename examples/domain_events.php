@@ -18,7 +18,6 @@ use Domain\Model\ReceiptNote\ReceiptNote;
 use Domain\Model\ReceiptNote\ReceiptNoteId;
 use Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Domain\Model\ReceiptNote\ReceiptQuantity;
-use Domain\Model\Supplier\Supplier;
 use Domain\Model\Supplier\SupplierId;
 use Ramsey\Uuid\Uuid;
 
@@ -46,10 +45,7 @@ $product2 = ProductId::fromString(Uuid::uuid4()->toString());
 
 $purchaseOrder = PurchaseOrder::create(
     PurchaseOrderId::fromString(Uuid::uuid4()->toString()),
-    new Supplier(
-        SupplierId::fromString(Uuid::uuid4()->toString()),
-        'Name of the supplier'
-    )
+    SupplierId::fromString(Uuid::uuid4()->toString())
 );
 $purchaseOrder->addLine($product1, new OrderedQuantity(10.0));
 $purchaseOrder->addLine($product2, new OrderedQuantity(5.0));
