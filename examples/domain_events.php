@@ -25,7 +25,9 @@ use Ramsey\Uuid\Uuid;
 require __DIR__ . '/../bootstrap.php';
 
 $eventDispatcher = new EventDispatcher();
-$eventDispatcher->subscribeToAllEvents(new EventCliLogger());
+$eventDispatcher->subscribeToAllEvents(function($event) {
+    echo $event . "\n";
+});
 
 $balanceRepository = new BalanceRepository($eventDispatcher);
 $updateStockBalanceListener = new UpdateStockBalance($balanceRepository);

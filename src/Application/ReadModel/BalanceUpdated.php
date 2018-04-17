@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Application\ReadModel;
 
+use function Common\CommandLine\line;
+use function Common\CommandLine\make_yellow;
 use Domain\Model\Product\ProductId;
 
 final class BalanceUpdated
@@ -21,5 +23,13 @@ final class BalanceUpdated
     {
         $this->productId = $productId;
         $this->stockLevel = $stockLevel;
+    }
+
+    public function __toString()
+    {
+        return line(
+            make_yellow('Balance updated'),
+            sprintf(': product %s, new stock level: %s', $this->productId, $this->stockLevel->asFloat())
+        );
     }
 }
