@@ -9,6 +9,11 @@ use Domain\Model\ReceiptNote\ReceiptQuantity;
 final class Line
 {
     /**
+     * @var int
+     */
+    private $lineNumber;
+
+    /**
      * @var ProductId
      */
     private $productId;
@@ -23,11 +28,17 @@ final class Line
      */
     private $quantityReceived;
 
-    public function __construct(ProductId $productId, OrderedQuantity $quantity)
+    public function __construct(int $lineNumber, ProductId $productId, OrderedQuantity $quantity)
     {
+        $this->lineNumber = $lineNumber;
         $this->productId = $productId;
         $this->quantity = $quantity;
         $this->quantityReceived = new QuantityReceived(0.0);
+    }
+
+    public function lineNumber(): int
+    {
+        return $this->lineNumber;
     }
 
     public function productId(): ProductId

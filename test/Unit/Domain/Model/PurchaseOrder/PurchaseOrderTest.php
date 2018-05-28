@@ -81,6 +81,22 @@ final class PurchaseOrderTest extends TestCase
     /**
      * @test
      */
+    public function added_lines_will_be_numbered(): void
+    {
+        $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplierId());
+
+        $productOfLine1 = $this->someProductId();
+        $productOfLine2 = $this->someOtherProductId();
+        $purchaseOrder->addLine($productOfLine1, $this->someQuantity());
+        $purchaseOrder->addLine($productOfLine2, $this->someQuantity());
+
+        self::assertEquals(1, $purchaseOrder->lineForProduct($productOfLine1)->lineNumber());
+        self::assertEquals(2, $purchaseOrder->lineForProduct($productOfLine2)->lineNumber());
+    }
+
+    /**
+     * @test
+     */
     public function you_have_to_at_least_order_one_thing(): void
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplierId());
@@ -176,8 +192,18 @@ final class PurchaseOrderTest extends TestCase
         return ProductId::fromString('a5aa7b51-7aa9-4344-82ea-8cd9ba8b3655');
     }
 
+    private function someOtherProductId(): ProductId
+    {
+        return ProductId::fromString('75bf88e4-a13e-415c-b56c-8c9cdc41f3c8');
+    }
+
     private function somePurchaseOrderId(): PurchaseOrderId
     {
         return PurchaseOrderId::fromString('99ab0293-2fd1-4a5a-859d-e12bd91d6955');
+    }
+
+    private function someQuantity(): OrderedQuantity
+    {
+        return new OrderedQuantity(10);
     }
 }

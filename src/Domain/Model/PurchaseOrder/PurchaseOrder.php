@@ -52,7 +52,9 @@ final class PurchaseOrder extends Aggregate
             }
         }
 
-        $this->lines[] = new Line($productId, $quantity);
+        $lineNumber = \count($this->lines) + 1;
+
+        $this->lines[] = new Line($lineNumber, $productId, $quantity);
     }
 
     public function place(): void
@@ -130,5 +132,20 @@ final class PurchaseOrder extends Aggregate
         }
 
         return true;
+    }
+
+    public function lineForProduct(ProductId $productId): Line
+    {
+        foreach ($this->lines as $line) {
+            if ($line->productId()->equals($productId)) {
+                return $line;
+            }
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Purchase order "%s" has no line for product "%s"',
+            (string)$this->purchaseOrderId,
+            (string)$productId
+        ));
     }
 }
