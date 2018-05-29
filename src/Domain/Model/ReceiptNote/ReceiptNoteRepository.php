@@ -5,6 +5,7 @@ namespace Domain\Model\ReceiptNote;
 
 use Common\AggregateNotFound;
 use Common\AggregateRepository;
+use Ramsey\Uuid\Uuid;
 
 final class ReceiptNoteRepository extends AggregateRepository
 {
@@ -22,5 +23,10 @@ final class ReceiptNoteRepository extends AggregateRepository
         }
 
         return $aggregate;
+    }
+
+    public function nextIdentity(): ReceiptNoteId
+    {
+        return ReceiptNoteId::fromString(Uuid::uuid4()->toString());
     }
 }

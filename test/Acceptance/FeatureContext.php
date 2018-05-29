@@ -9,11 +9,9 @@ use Common\EventDispatcher\EventDispatcher;
 use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\OrderedQuantity;
 use Domain\Model\PurchaseOrder\PurchaseOrder;
-use Domain\Model\PurchaseOrder\PurchaseOrderId;
 use Domain\Model\PurchaseOrder\PurchaseOrderRepository;
 use Domain\Model\ReceiptNote\GoodsReceived;
 use Domain\Model\ReceiptNote\ReceiptNote;
-use Domain\Model\ReceiptNote\ReceiptNoteId;
 use Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Domain\Model\ReceiptNote\ReceiptQuantity;
 use Domain\Model\Supplier\SupplierId;
@@ -59,7 +57,7 @@ final class FeatureContext implements Context
     /**
      * @BeforeScenario
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->supplier = SupplierId::fromString(Uuid::uuid4()->toString());
 
@@ -75,19 +73,22 @@ final class FeatureContext implements Context
 
     /**
      * @Given /^the catalog contains product "([^"]*)"$/
+     * @param string $name
      */
-    public function theCatalogContainsProduct($name)
+    public function theCatalogContainsProduct(string $name): void
     {
         $this->products[$name] = ProductId::fromString(Uuid::uuid4()->toString());
     }
 
     /**
      * @Given /^I placed a purchase order with product "([^"]*)", quantity ([\d\.]+)$/
+     * @param string $productName
+     * @param string $orderedQuantity
      */
-    public function iPlacedAPurchaseOrderForProductQuantity($productName, $orderedQuantity)
+    public function iPlacedAPurchaseOrderForProductQuantity(string $productName, string $orderedQuantity): void
     {
         $this->purchaseOrder = PurchaseOrder::create(
-            PurchaseOrderId::fromString(Uuid::uuid4()->toString()),
+            $this->purchaseOrderRepository->nextIdentity(),
             $this->supplier);
 
         $this->purchaseOrder->addLine($this->products[$productName], new OrderedQuantity((float)$orderedQuantity));
@@ -99,11 +100,13 @@ final class FeatureContext implements Context
 
     /**
      * @When /^I create[d]? a receipt note for this purchase order, receiving ([\d\.]+) items of product "([^"]*)"$/
+     * @param string $receiptQuantity
+     * @param string $productName
      */
-    public function iCreateAReceiptNoteForThisPurchaseOrderReceivingItemsOfProduct($receiptQuantity, $productName)
+    public function iCreateAReceiptNoteForThisPurchaseOrderReceivingItemsOfProduct(string $receiptQuantity, string $productName): void
     {
         $this->receiptNote = ReceiptNote::create(
-            ReceiptNoteId::fromString(Uuid::uuid4()->toString()),
+            $this->receiptNoteRepository->nextIdentity(),
             $this->purchaseOrder->purchaseOrderId()
         );
         $this->receiptNote->receive($this->products[$productName], new ReceiptQuantity((float)$receiptQuantity));
@@ -114,7 +117,7 @@ final class FeatureContext implements Context
     /**
      * @Then /^I expect the purchase order not to be fully delivered yet$/
      */
-    public function iExpectThePurchaseOrderNotToBeFullyDeliveredYet()
+    public function iExpectThePurchaseOrderNotToBeFullyDeliveredYet(): void
     {
         assertFalse($this->purchaseOrder->isFullyDelivered());
     }
@@ -122,7 +125,7 @@ final class FeatureContext implements Context
     /**
      * @Then /^I expect the purchase order to be fully delivered/
      */
-    public function iExpectThePurchaseOrderToBeFullyDelivered()
+    public function iExpectThePurchaseOrderToBeFullyDelivered(): void
     {
         assertTrue($this->purchaseOrder->isFullyDelivered());
     }

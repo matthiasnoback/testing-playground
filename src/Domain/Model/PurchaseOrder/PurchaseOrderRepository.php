@@ -5,6 +5,7 @@ namespace Domain\Model\PurchaseOrder;
 
 use Common\AggregateNotFound;
 use Common\AggregateRepository;
+use Ramsey\Uuid\Uuid;
 
 final class PurchaseOrderRepository extends AggregateRepository
 {
@@ -22,5 +23,10 @@ final class PurchaseOrderRepository extends AggregateRepository
         }
 
         return $aggregate;
+    }
+
+    public function nextIdentity(): PurchaseOrderId
+    {
+        return PurchaseOrderId::fromString(Uuid::uuid4()->toString());
     }
 }
