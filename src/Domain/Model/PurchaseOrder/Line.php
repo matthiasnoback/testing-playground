@@ -9,6 +9,7 @@ use Domain\Model\ReceiptNote\ReceiptQuantity;
 
 /**
  * @ORM\Entity()
+ * @ORM\Table(name="PurchaseOrderLine")
  */
 final class Line
 {
@@ -43,7 +44,7 @@ final class Line
      * @var float
      */
     private $quantity;
-    
+
     /**
      * @ORM\Column(type="float")
      * @var float

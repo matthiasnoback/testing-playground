@@ -10,7 +10,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $isDevMode = true;
 \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
 $config = Setup::createAnnotationMetadataConfiguration(
-    [__DIR__. '/../src/Domain/Model/PurchaseOrder'],
+    [
+        __DIR__. '/../src/Domain/Model/PurchaseOrder',
+        __DIR__. '/../src/Domain/Model/ReceiptNote'
+    ],
     $isDevMode,
     null,
     null,

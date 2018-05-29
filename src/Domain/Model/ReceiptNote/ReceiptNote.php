@@ -5,30 +5,42 @@ namespace Domain\Model\ReceiptNote;
 
 use Common\Aggregate;
 use Common\AggregateId;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\PurchaseOrderId;
 
+/**
+ * @ORM\Entity()
+ */
 final class ReceiptNote extends Aggregate
 {
     /**
-     * @var ReceiptNoteId
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(type="string")
+     * @var string
      */
-    private $receiptNoteId;
+    private $id;
 
     /**
-     * @var PurchaseOrderId
+     * @ORM\Column(type="string")
+     * @var string
      */
     private $purchaseOrderId;
 
     /**
-     * @var Line[]
+     * @ORM\OneToMany(targetEntity="Line", mappedBy="receiptNote", cascade={"PERSIST"})
+     * @var Collection|Line[]
      */
     private $lines;
 
     private function __construct(ReceiptNoteId $receiptNoteId, PurchaseOrderId $purchaseOrderId)
     {
-        $this->receiptNoteId = $receiptNoteId;
-        $this->purchaseOrderId = $purchaseOrderId;
+        $this->id = $receiptNoteId->asString();
+        $this->purchaseOrderId = $purchaseOrderId->asString();
+        $this->lines = new ArrayCollection();
     }
 
     public static function create(ReceiptNoteId $receiptNoteId, PurchaseOrderId $purchaseOrderId): ReceiptNote
@@ -42,35 +54,35 @@ final class ReceiptNote extends Aggregate
 
     public function id(): AggregateId
     {
-        return $this->receiptNoteId;
+        return $this->receiptNoteId();
     }
 
     public function receiptNoteId(): ReceiptNoteId
     {
-        return $this->receiptNoteId;
+        return ReceiptNoteId::fromString($this->id);
     }
 
     public function purchaseOrderId(): PurchaseOrderId
     {
-        return $this->purchaseOrderId;
+        return PurchaseOrderId::fromString($this->purchaseOrderId);
     }
 
     public function receive(ProductId $productId, ReceiptQuantity $quantity): void
     {
-        $this->lines[] = new Line($productId, $quantity);
+        $this->lines[] = new Line($this, $productId, $quantity);
 
-        $this->recordThat(new GoodsReceived($this->receiptNoteId, $this->purchaseOrderId, $productId, $quantity));
+        $this->recordThat(new GoodsReceived($this->receiptNoteId(), $this->purchaseOrderId(), $productId, $quantity));
     }
 
     public function undo(): void
     {
         foreach ($this->lines as $line) {
-            $this->recordThat(new ReceiptUndone($this->purchaseOrderId, $line->productId(), $line->quantity()));
+            $this->recordThat(new ReceiptUndone($this->purchaseOrderId(), $line->productId(), $line->quantity()));
         }
     }
 
     public function lines(): array
     {
-        return $this->lines;
+        return $this->lines->toArray();
     }
 }

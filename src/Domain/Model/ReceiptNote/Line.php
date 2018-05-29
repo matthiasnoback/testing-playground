@@ -3,33 +3,55 @@ declare(strict_types=1);
 
 namespace Domain\Model\ReceiptNote;
 
+use Doctrine\ORM\Mapping as ORM;
 use Domain\Model\Product\ProductId;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="ReceiptNoteLine")
+ */
 final class Line
 {
     /**
-     * @var ProductId
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ReceiptNote")
+     * @var ReceiptNote
+     */
+    private $receiptNote;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string
      */
     private $productId;
 
     /**
-     * @var ReceiptQuantity
+     * @ORM\Column(type="float")
+     * @var float
      */
     private $quantity;
 
-    public function __construct(ProductId $productId, ReceiptQuantity $quantity)
+    public function __construct(ReceiptNote $receiptNote, ProductId $productId, ReceiptQuantity $quantity)
     {
-        $this->productId = $productId;
-        $this->quantity = $quantity;
+        $this->receiptNote = $receiptNote;
+        $this->productId = $productId->asString();
+        $this->quantity = $quantity->asFloat();
     }
 
     public function productId(): ProductId
     {
-        return $this->productId;
+        return ProductId::fromString($this->productId);
     }
 
     public function quantity(): ReceiptQuantity
     {
-        return $this->quantity;
+        return new ReceiptQuantity($this->quantity);
     }
 }
