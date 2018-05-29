@@ -5,38 +5,51 @@ namespace Domain\Model\PurchaseOrder;
 
 use Common\Aggregate;
 use Common\AggregateId;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Domain\Model\Product\ProductId;
 use Domain\Model\ReceiptNote\ReceiptQuantity;
 use Domain\Model\Supplier\SupplierId;
 use InvalidArgumentException;
 use LogicException;
 
+/**
+ * @ORM\Entity()
+ */
 final class PurchaseOrder extends Aggregate
 {
     /**
-     * @var PurchaseOrderId
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(type="string")
+     * @var string
      */
-    private $purchaseOrderId;
+    private $id;
 
     /**
-     * @var SupplierId
+     * @ORM\Column(type="string")
+     * @var string
      */
     private $supplierId;
 
     /**
-     * @var Line[]
+     * @ORM\OneToMany(targetEntity="Line", mappedBy="purchaseOrder", cascade={"PERSIST"})
+     * @var Collection|Line[]
      */
     private $lines = [];
 
     /**
+     * @ORM\Column(type="boolean")
      * @var bool
      */
     private $placed = false;
 
     private function __construct(PurchaseOrderId $purchaseOrderId, SupplierId $supplierId)
     {
-        $this->supplierId = $supplierId;
-        $this->purchaseOrderId = $purchaseOrderId;
+        $this->id = $purchaseOrderId->asString();
+        $this->supplierId = $supplierId->asString();
+        $this->lines = new ArrayCollection();
     }
 
     public static function create(PurchaseOrderId $purchaseOrderId, SupplierId $supplierId): PurchaseOrder
@@ -54,7 +67,7 @@ final class PurchaseOrder extends Aggregate
 
         $lineNumber = \count($this->lines) + 1;
 
-        $this->lines[] = new Line($lineNumber, $productId, $quantity);
+        $this->lines[] = new Line($this, $lineNumber, $productId, $quantity);
     }
 
     public function place(): void
@@ -69,22 +82,22 @@ final class PurchaseOrder extends Aggregate
 
         $this->placed = true;
 
-        $this->recordThat(new PurchaseOrderPlaced($this->purchaseOrderId));
+        $this->recordThat(new PurchaseOrderPlaced($this->purchaseOrderId()));
     }
 
     public function id(): AggregateId
     {
-        return $this->purchaseOrderId;
+        return $this->purchaseOrderId();
     }
 
     public function purchaseOrderId(): PurchaseOrderId
     {
-        return $this->purchaseOrderId;
+        return PurchaseOrderId::fromString($this->id);
     }
 
     public function supplierId(): SupplierId
     {
-        return $this->supplierId;
+        return SupplierId::fromString($this->supplierId);
     }
 
     /**
@@ -92,7 +105,7 @@ final class PurchaseOrder extends Aggregate
      */
     public function lines(): array
     {
-        return $this->lines;
+        return $this->lines->toArray();
     }
 
     public function processReceipt(ProductId $productId, ReceiptQuantity $quantity): void
@@ -104,7 +117,7 @@ final class PurchaseOrder extends Aggregate
         }
 
         if ($this->isFullyDelivered()) {
-            $this->recordThat(new PurchaseOrderCompleted($this->purchaseOrderId));
+            $this->recordThat(new PurchaseOrderCompleted($this->purchaseOrderId()));
         }
     }
 
@@ -119,7 +132,7 @@ final class PurchaseOrder extends Aggregate
         }
 
         if ($wasFullyReceived && !$this->isFullyDelivered()) {
-            $this->recordThat(new PurchaseOrderReopened($this->purchaseOrderId));
+            $this->recordThat(new PurchaseOrderReopened($this->purchaseOrderId()));
         }
     }
 
@@ -144,7 +157,7 @@ final class PurchaseOrder extends Aggregate
 
         throw new \RuntimeException(sprintf(
             'Purchase order "%s" has no line for product "%s"',
-            (string)$this->purchaseOrderId,
+            (string)$this->purchaseOrderId(),
             (string)$productId
         ));
     }

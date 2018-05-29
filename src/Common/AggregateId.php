@@ -31,6 +31,11 @@ abstract class AggregateId
         return $aggregateId;
     }
 
+    public function asString(): string
+    {
+        return $this->id;
+    }
+
     public function __toString(): string
     {
         return (string)substr($this->id, -5);
