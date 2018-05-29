@@ -98,15 +98,15 @@ final class FeatureContext implements Context
     }
 
     /**
-     * @When /^I create a receipt note for this purchase order, receiving ([\d\.]+) items of product "([^"]*)"$/
+     * @When /^I create[d]? a receipt note for this purchase order, receiving ([\d\.]+) items of product "([^"]*)"$/
      */
-    public function iCreateAReceiptNoteForThisPurchaseOrderReceivingItemsOfProduct($arg1, $arg2)
+    public function iCreateAReceiptNoteForThisPurchaseOrderReceivingItemsOfProduct($receiptQuantity, $productName)
     {
         $this->receiptNote = ReceiptNote::create(
             ReceiptNoteId::fromString(Uuid::uuid4()->toString()),
             $this->purchaseOrder->purchaseOrderId()
         );
-        $this->receiptNote->receive($this->products[$arg2], new ReceiptQuantity((float)$arg1));
+        $this->receiptNote->receive($this->products[$productName], new ReceiptQuantity((float)$receiptQuantity));
 
         $this->receiptNoteRepository->save($this->receiptNote);
     }
@@ -120,9 +120,9 @@ final class FeatureContext implements Context
     }
 
     /**
-     * @Then /^I expect the purchase order to be fully delivered yet$/
+     * @Then /^I expect the purchase order to be fully delivered/
      */
-    public function iExpectThePurchaseOrderToBeFullyDeliveredYet()
+    public function iExpectThePurchaseOrderToBeFullyDelivered()
     {
         assertTrue($this->purchaseOrder->isFullyDelivered());
     }

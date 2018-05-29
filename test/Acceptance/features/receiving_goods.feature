@@ -11,9 +11,10 @@ Feature: Receiving goods
   Scenario: Receive all the ordered goods at once
     Given I placed a purchase order with product "A", quantity 2.0
      When I create a receipt note for this purchase order, receiving 2.0 items of product "A"
-     Then I expect the purchase order to be fully delivered yet
+     Then I expect the purchase order to be fully delivered
 
   Scenario: Receive all the ordered goods in multiple batches
-    Given I placed a purchase order with product "A", quantity 2.0
+    Given I placed a purchase order with product "A", quantity 3.0
+      And I created a receipt note for this purchase order, receiving 1.0 items of product "A"
      When I create a receipt note for this purchase order, receiving 2.0 items of product "A"
-     Then I expect the purchase order to be fully delivered yet
+     Then I expect the purchase order to be fully delivered
