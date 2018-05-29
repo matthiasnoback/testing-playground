@@ -37,7 +37,7 @@ final class PurchaseOrder extends Aggregate
      * @ORM\OneToMany(targetEntity="Line", mappedBy="purchaseOrder", cascade={"PERSIST"})
      * @var Collection|Line[]
      */
-    private $lines = [];
+    private $lines;
 
     /**
      * @ORM\Column(type="boolean")
