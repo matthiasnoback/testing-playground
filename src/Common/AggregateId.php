@@ -38,6 +38,6 @@ abstract class AggregateId
 
     public function __toString(): string
     {
-        return (string)substr($this->id, -5);
+        return $this->asString();
     }
 }

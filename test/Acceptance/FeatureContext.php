@@ -3,19 +3,13 @@ declare(strict_types=1);
 
 namespace Test\Acceptance;
 
-use Application\EventSubscriber\UpdatePurchaseOrder;
 use Application\Service\CreateReceiptNote\CreateReceiptNote;
-use Application\Service\CreateReceiptNote\CreateReceiptNoteService;
 use Application\Service\PlacePurchaseOrder\Line as PurchaseOrderLine;
 use Application\Service\PlacePurchaseOrder\PlacePurchaseOrder;
-use Application\Service\PlacePurchaseOrder\PlacePurchaseOrderService;
 use Behat\Behat\Context\Context;
-use Common\EventDispatcher\EventDispatcher;
 use Domain\Model\PurchaseOrder\PurchaseOrder;
-use Domain\Model\PurchaseOrder\PurchaseOrderRepository;
-use Domain\Model\ReceiptNote\GoodsReceived;
 use Domain\Model\ReceiptNote\ReceiptNote;
-use Domain\Model\ReceiptNote\ReceiptNoteRepository;
+use Infrastructure\ServiceContainer;
 use Ramsey\Uuid\Uuid;
 use Application\Service\CreateReceiptNote\Line as ReceiptNoteLine;
 
@@ -42,29 +36,9 @@ final class FeatureContext implements Context
     private $receiptNote;
 
     /**
-     * @var EventDispatcher
+     * @var ServiceContainer
      */
-    private $eventDispatcher;
-
-    /**
-     * @var PurchaseOrderRepository
-     */
-    private $purchaseOrderRepository;
-
-    /**
-     * @var ReceiptNoteRepository
-     */
-    private $receiptNoteRepository;
-
-    /**
-     * @var PlacePurchaseOrderService
-     */
-    private $placePurchaseOrderService;
-
-    /**
-     * @var CreateReceiptNoteService
-     */
-    private $createReceiptNoteService;
+    private $container;
 
     /**
      * @BeforeScenario
@@ -72,17 +46,7 @@ final class FeatureContext implements Context
     public function setUp(): void
     {
         $this->supplierId = Uuid::uuid4()->toString();
-
-        $this->eventDispatcher = new EventDispatcher();
-        $this->purchaseOrderRepository = new PurchaseOrderRepository($this->eventDispatcher);
-        $updatePurchaseOrderSubscriber = new UpdatePurchaseOrder($this->purchaseOrderRepository);
-        $this->eventDispatcher->registerSubscriber(
-            GoodsReceived::class,
-            [$updatePurchaseOrderSubscriber, 'whenGoodsReceived']
-        );
-        $this->receiptNoteRepository = new ReceiptNoteRepository($this->eventDispatcher);
-        $this->placePurchaseOrderService = new PlacePurchaseOrderService($this->purchaseOrderRepository);
-        $this->createReceiptNoteService = new CreateReceiptNoteService($this->purchaseOrderRepository, $this->receiptNoteRepository);
+        $this->container = new ServiceContainer();
     }
 
     /**
@@ -108,7 +72,7 @@ final class FeatureContext implements Context
         $lineDto->productId = $this->productIds[$productName];
         $dto->lines[] = $lineDto;
 
-        $this->purchaseOrder = $this->placePurchaseOrderService->place($dto);
+        $this->purchaseOrder = $this->container->placePurchaseOrderService()->place($dto);
     }
 
     /**
@@ -125,7 +89,7 @@ final class FeatureContext implements Context
         $lineDto->quantity = (float)$receiptQuantity;
         $dto->lines[] = $lineDto;
 
-        $this->receiptNote = $this->createReceiptNoteService->create($dto);
+        $this->receiptNote = $this->container->createReceiptNoteService()->create($dto);
     }
 
     /**

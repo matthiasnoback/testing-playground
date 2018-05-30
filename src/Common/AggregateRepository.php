@@ -9,7 +9,7 @@ abstract class AggregateRepository
     /**
      * @var Aggregate[]
      */
-    private $objects;
+    private $objects = [];
 
     /**
      * @var EventDispatcher
