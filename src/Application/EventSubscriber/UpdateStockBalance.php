@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Application;
+namespace Application\EventSubscriber;
 
 use Application\ReadModel\BalanceRepository;
 use Domain\Model\ReceiptNote\GoodsReceived;
