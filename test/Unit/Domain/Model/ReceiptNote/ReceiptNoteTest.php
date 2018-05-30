@@ -42,7 +42,7 @@ final class ReceiptNoteTest extends TestCase
         $receiptNote->recordedEvents();
 
         $productId = $this->someProductId();
-        $quantity = new ReceiptQuantity(10.0);
+        $quantity = new ReceiptQuantity(10);
         $receiptNote->receive($productId, $quantity);
 
         self::assertCount(1, $receiptNote->lines());

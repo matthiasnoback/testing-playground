@@ -24,7 +24,7 @@ final class BalanceRepositoryTest extends TestCase
         $balance = $balanceRepository->getBalanceFor($productId);
 
         self::assertEquals($productId, $balance->productId());
-        self::assertEquals(0.0, $balance->stockLevel()->asFloat());
+        self::assertEquals(0, $balance->stockLevel()->asInt());
     }
 
     /**
@@ -35,14 +35,14 @@ final class BalanceRepositoryTest extends TestCase
         $balanceRepository = new BalanceRepository(new EventDispatcher());
         $productId = $this->someProductId();
         $balance = $balanceRepository->getBalanceFor($productId);
-        $balance = $balance->processReceipt(new ReceiptQuantity(10.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(10));
 
         $balanceRepository->save($balance);
 
         $retrievedBalance = $balanceRepository->getBalanceFor($productId);
 
         self::assertEquals($productId, $retrievedBalance->productId());
-        self::assertEquals(10.0, $retrievedBalance->stockLevel()->asFloat());
+        self::assertEquals(10, $retrievedBalance->stockLevel()->asInt());
     }
 
     private function someProductId(): ProductId

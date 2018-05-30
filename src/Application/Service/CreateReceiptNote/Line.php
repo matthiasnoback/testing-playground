@@ -11,7 +11,7 @@ final class Line
     public $productId;
 
     /**
-     * @var float
+     * @var int
      */
     public $quantity;
 }

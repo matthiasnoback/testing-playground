@@ -29,7 +29,7 @@ final class BalanceUpdated
     {
         return line(
             make_yellow('Balance updated'),
-            sprintf(': product %s, new stock level: %s', $this->productId, $this->stockLevel->asFloat())
+            sprintf(': product %s, new stock level: %s', $this->productId, $this->stockLevel->asInt())
         );
     }
 }

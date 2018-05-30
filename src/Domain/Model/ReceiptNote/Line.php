@@ -33,8 +33,8 @@ final class Line
     private $productId;
 
     /**
-     * @ORM\Column(type="float")
-     * @var float
+     * @ORM\Column(type="integer")
+     * @var int
      */
     private $quantity;
 
@@ -42,7 +42,7 @@ final class Line
     {
         $this->receiptNote = $receiptNote;
         $this->productId = $productId->asString();
-        $this->quantity = $quantity->asFloat();
+        $this->quantity = $quantity->asInt();
     }
 
     public function productId(): ProductId

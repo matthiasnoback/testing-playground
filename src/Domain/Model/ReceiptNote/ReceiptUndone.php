@@ -51,7 +51,7 @@ final class ReceiptUndone
     {
         return line(
             make_red('Receipt undone'),
-            sprintf(': product %s, quantity %s', $this->productId, $this->quantity->asFloat())
+            sprintf(': product %s, quantity %s', $this->productId, $this->quantity->asInt())
         );
     }
 }

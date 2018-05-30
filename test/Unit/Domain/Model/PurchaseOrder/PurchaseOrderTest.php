@@ -32,7 +32,7 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplierId());
 
-        $purchaseOrder->addLine($this->someProductId(), $someQuantity = new OrderedQuantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), $someQuantity = new OrderedQuantity(10));
 
         $this->assertCount(1, $purchaseOrder->lines());
     }
@@ -47,7 +47,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than 0');
 
-        $purchaseOrder->addLine($this->someProductId(), $aNegativeQuantity = new OrderedQuantity(-5.0));
+        $purchaseOrder->addLine($this->someProductId(), $aNegativeQuantity = new OrderedQuantity(-5));
     }
 
     /**
@@ -60,7 +60,7 @@ final class PurchaseOrderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('larger than 0');
 
-        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(0.0));
+        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(0));
     }
 
     /**
@@ -70,12 +70,12 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplierId());
 
-        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(10));
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('same product');
 
-        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(5.0));
+        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(5));
     }
 
     /**
@@ -114,7 +114,7 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrderId = $this->somePurchaseOrderId();
         $purchaseOrder = PurchaseOrder::create($purchaseOrderId, $this->someSupplierId());
-        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(10));
         $purchaseOrder->place();
 
         self::assertEquals(
@@ -132,7 +132,7 @@ final class PurchaseOrderTest extends TestCase
     public function you_can_not_place_the_same_purchase_order_again(): void
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplierId());
-        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(10.0));
+        $purchaseOrder->addLine($this->someProductId(), new OrderedQuantity(10));
         $purchaseOrder->place();
 
         $this->expectException(LogicException::class);
@@ -149,13 +149,13 @@ final class PurchaseOrderTest extends TestCase
         $purchaseOrderId = $this->somePurchaseOrderId();
         $purchaseOrder = PurchaseOrder::create($purchaseOrderId, $this->someSupplierId());
         $productId = $this->someProductId();
-        $orderedQuantity = new OrderedQuantity(10.0);
+        $orderedQuantity = new OrderedQuantity(10);
         $purchaseOrder->addLine($productId, $orderedQuantity);
         $purchaseOrder->place();
         // clear recorded events
         $purchaseOrder->recordedEvents();
 
-        $purchaseOrder->processReceipt($productId, new ReceiptQuantity($orderedQuantity->asFloat()));
+        $purchaseOrder->processReceipt($productId, new ReceiptQuantity($orderedQuantity->asInt()));
 
         self::assertTrue($purchaseOrder->isFullyDelivered());
         self::assertEquals(
@@ -173,11 +173,11 @@ final class PurchaseOrderTest extends TestCase
     {
         $purchaseOrder = PurchaseOrder::create($this->somePurchaseOrderId(), $this->someSupplierId());
         $productId = $this->someProductId();
-        $orderedQuantity = new OrderedQuantity(10.0);
+        $orderedQuantity = new OrderedQuantity(10);
         $purchaseOrder->addLine($productId, $orderedQuantity);
         $purchaseOrder->place();
 
-        $purchaseOrder->processReceipt($productId, new ReceiptQuantity($lessThanTheOrderedQuantity = 5.0));
+        $purchaseOrder->processReceipt($productId, new ReceiptQuantity($lessThanTheOrderedQuantity = 5));
 
         self::assertFalse($purchaseOrder->isFullyDelivered());
     }

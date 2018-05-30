@@ -61,7 +61,7 @@ final class GoodsReceived
     {
         return line(
             make_green('Goods received'),
-            sprintf(': product %s, quantity %s', $this->productId, $this->quantity->asFloat())
+            sprintf(': product %s, quantity %s', $this->productId, $this->quantity->asInt())
         );
     }
 }

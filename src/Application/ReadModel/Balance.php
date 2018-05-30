@@ -33,7 +33,7 @@ final class Balance
     {
         return new self(
             $this->productId,
-            $this->stockLevel->add($quantity->asFloat())
+            $this->stockLevel->add($quantity->asInt())
         );
     }
 
@@ -41,7 +41,7 @@ final class Balance
     {
         return new self(
             $this->productId,
-            $this->stockLevel->subtract($quantity->asFloat())
+            $this->stockLevel->subtract($quantity->asInt())
         );
     }
 

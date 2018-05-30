@@ -6,11 +6,11 @@ namespace Domain\Model\PurchaseOrder;
 final class OrderedQuantity
 {
     /**
-     * @var float
+     * @var int
      */
     private $quantity;
 
-    public function __construct(float $quantity)
+    public function __construct(int $quantity)
     {
         if ($quantity <= 0) {
             throw new \InvalidArgumentException('You can only order quantities larger than 0.');
@@ -19,7 +19,7 @@ final class OrderedQuantity
         $this->quantity = $quantity;
     }
 
-    public function asFloat(): float
+    public function asInt(): int
     {
         return $this->quantity;
     }

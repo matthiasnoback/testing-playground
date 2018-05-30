@@ -18,7 +18,7 @@ final class BalanceTest extends TestCase
         $balance = Balance::fromScratch($productId);
 
         self::assertEquals($productId, $balance->productId());
-        self::assertEquals(0.0, $balance->stockLevel()->asFloat());
+        self::assertEquals(0, $balance->stockLevel()->asInt());
     }
 
     /**
@@ -29,10 +29,10 @@ final class BalanceTest extends TestCase
         $productId = $this->someProductId();
         $balance = Balance::fromScratch($productId);
 
-        $balance = $balance->processReceipt(new ReceiptQuantity(10.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(10));
 
         self::assertEquals($productId, $balance->productId());
-        self::assertEquals(10.0, $balance->stockLevel()->asFloat());
+        self::assertEquals(10, $balance->stockLevel()->asInt());
     }
 
     /**
@@ -43,11 +43,11 @@ final class BalanceTest extends TestCase
         $productId = $this->someProductId();
         $balance = Balance::fromScratch($productId);
 
-        $balance = $balance->processReceipt(new ReceiptQuantity(10.0));
-        $balance = $balance->processReceipt(new ReceiptQuantity(5.0));
+        $balance = $balance->processReceipt(new ReceiptQuantity(10));
+        $balance = $balance->processReceipt(new ReceiptQuantity(5));
 
         self::assertEquals($productId, $balance->productId());
-        self::assertEquals(15.0, $balance->stockLevel()->asFloat());
+        self::assertEquals(15, $balance->stockLevel()->asInt());
     }
 
     private function someProductId(): ProductId

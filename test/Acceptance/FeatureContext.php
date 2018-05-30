@@ -69,7 +69,7 @@ final class FeatureContext implements Context
         $dto = new PlacePurchaseOrder;
         $dto->supplierId = $this->supplierId;
         $lineDto = new PurchaseOrderLine();
-        $lineDto->quantity = (float)$orderedQuantity;
+        $lineDto->quantity = (int)$orderedQuantity;
         $lineDto->productId = $this->productIdFor($productName);
         $dto->lines[] = $lineDto;
 
@@ -77,7 +77,7 @@ final class FeatureContext implements Context
     }
 
     /**
-     * @When /^I create[d]? a receipt note for this purchase order, receiving ([\d\.]+) items of product "([^"]*)"$/
+     * @When /^I create[d]? a receipt note for this purchase order, receiving ([\d\.]+) item[s]? of product "([^"]*)"$/
      * @param string $receiptQuantity
      * @param string $productName
      */
@@ -87,7 +87,7 @@ final class FeatureContext implements Context
         $dto->purchaseOrderId = $this->purchaseOrder->purchaseOrderId()->asString();
         $lineDto = new ReceiptNoteLine();
         $lineDto->productId = $this->productIdFor($productName);
-        $lineDto->quantity = (float)$receiptQuantity;
+        $lineDto->quantity = (int)$receiptQuantity;
         $dto->lines[] = $lineDto;
 
         $this->receiptNote = $this->container->createReceiptNoteService()->create($dto);
@@ -120,7 +120,7 @@ final class FeatureContext implements Context
             ProductId::fromString($this->productIdFor($productName))
         );
 
-        assertEquals((float)$stockLevel, $balance->stockLevel()->asFloat());
+        assertEquals((int)$stockLevel, $balance->stockLevel()->asInt());
     }
 
     /**

@@ -40,14 +40,14 @@ final class Line
     private $productId;
 
     /**
-     * @ORM\Column(type="float")
-     * @var float
+     * @ORM\Column(type="integer")
+     * @var int
      */
     private $quantity;
 
     /**
-     * @ORM\Column(type="float")
-     * @var float
+     * @ORM\Column(type="integer")
+     * @var int
      */
     private $quantityReceived;
 
@@ -56,8 +56,8 @@ final class Line
         $this->purchaseOrder = $purchaseOrder;
         $this->lineNumber = $lineNumber;
         $this->productId = $productId->asString();
-        $this->quantity = $quantity->asFloat();
-        $this->quantityReceived = 0.0;
+        $this->quantity = $quantity->asInt();
+        $this->quantityReceived = 0;
     }
 
     public function lineNumber(): int
@@ -72,17 +72,17 @@ final class Line
 
     public function processReceipt(ReceiptQuantity $quantity): void
     {
-        $this->quantityReceived = $this->quantityReceived()->add($quantity)->asFloat();
+        $this->quantityReceived = $this->quantityReceived()->add($quantity)->asInt();
     }
 
     public function undoReceipt($quantity): void
     {
-        $this->quantityReceived = $this->quantityReceived()->subtract($quantity)->asFloat();
+        $this->quantityReceived = $this->quantityReceived()->subtract($quantity)->asInt();
     }
 
     public function isFullyDelivered(): bool
     {
-        return $this->quantityReceived()->asFloat() >= $this->quantity()->asFloat();
+        return $this->quantityReceived()->asInt() >= $this->quantity()->asInt();
     }
 
     private function quantityReceived(): QuantityReceived
