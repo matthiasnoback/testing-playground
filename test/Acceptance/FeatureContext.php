@@ -7,7 +7,6 @@ use Application\Service\CreateReceiptNote\CreateReceiptNote;
 use Application\Service\PlacePurchaseOrder\Line as PurchaseOrderLine;
 use Application\Service\PlacePurchaseOrder\PlacePurchaseOrder;
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\PurchaseOrder;
 use Domain\Model\ReceiptNote\ReceiptNote;
@@ -71,7 +70,7 @@ final class FeatureContext implements Context
         $dto->supplierId = $this->supplierId;
         $lineDto = new PurchaseOrderLine();
         $lineDto->quantity = (float)$orderedQuantity;
-        $lineDto->productId = $this->productIds[$productName];
+        $lineDto->productId = $this->productIdFor($productName);
         $dto->lines[] = $lineDto;
 
         $this->purchaseOrder = $this->container->placePurchaseOrderService()->place($dto);
@@ -87,7 +86,7 @@ final class FeatureContext implements Context
         $dto = new CreateReceiptNote();
         $dto->purchaseOrderId = $this->purchaseOrder->purchaseOrderId()->asString();
         $lineDto = new ReceiptNoteLine();
-        $lineDto->productId = $this->productIds[$productName];
+        $lineDto->productId = $this->productIdFor($productName);
         $lineDto->quantity = (float)$receiptQuantity;
         $dto->lines[] = $lineDto;
 
@@ -112,13 +111,28 @@ final class FeatureContext implements Context
 
     /**
      * @Then the stock level for product :productName will be :stockLevel
+     * @param string $productName
+     * @param string $stockLevel
      */
-    public function theStockLevelForProductWillBe(string $productName, string $stockLevel)
+    public function theStockLevelForProductWillBe(string $productName, string $stockLevel): void
     {
         $balance = $this->container->balanceRepository()->getBalanceFor(
-            ProductId::fromString($this->productIds[$productName])
+            ProductId::fromString($this->productIdFor($productName))
         );
 
         assertEquals((float)$stockLevel, $balance->stockLevel()->asFloat());
+    }
+
+    /**
+     * @When I undo the receipt
+     */
+    public function iUndoTheReceipt()
+    {
+        $this->container->undoReceiptService()->undo($this->receiptNote->receiptNoteId()->asString());
+    }
+
+    private function productIdFor(string $productName): string
+    {
+        return $this->productIds[$productName];
     }
 }

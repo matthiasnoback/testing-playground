@@ -8,10 +8,12 @@ use Application\EventSubscriber\UpdateStockBalance;
 use Application\ReadModel\BalanceRepository;
 use Application\Service\CreateReceiptNote\CreateReceiptNoteService;
 use Application\Service\PlacePurchaseOrder\PlacePurchaseOrderService;
+use Application\Service\UndoReceipt\UndoReceiptService;
 use Common\EventDispatcher\EventDispatcher;
 use Domain\Model\PurchaseOrder\PurchaseOrderRepository;
 use Domain\Model\ReceiptNote\GoodsReceived;
 use Domain\Model\ReceiptNote\ReceiptNoteRepository;
+use Domain\Model\ReceiptNote\ReceiptUndone;
 
 final class ServiceContainer
 {
@@ -27,6 +29,13 @@ final class ServiceContainer
         static $service;
 
         return $service ?: $service = new CreateReceiptNoteService($this->purchaseOrderRepository(), $this->receiptNoteRepository());
+    }
+
+    public function undoReceiptService(): UndoReceiptService
+    {
+        static $service;
+
+        return $service ?: $service = new UndoReceiptService($this->receiptNoteRepository());
     }
 
     public function purchaseOrderRepository(): PurchaseOrderRepository
@@ -63,6 +72,14 @@ final class ServiceContainer
             $service->registerSubscriber(
                 GoodsReceived::class,
                 [$this->updateStockBalanceSubscriber(), 'whenGoodsReceived']
+            );
+            $service->registerSubscriber(
+                ReceiptUndone::class,
+                [$this->updatePurchaseOrderSubscriber(), 'whenReceiptUndone']
+            );
+            $service->registerSubscriber(
+                ReceiptUndone::class,
+                [$this->updateStockBalanceSubscriber(), 'whenReceiptUndone']
             );
         }
 
