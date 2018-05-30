@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Infrastructure;
 
 use Application\EventSubscriber\UpdatePurchaseOrder;
+use Application\EventSubscriber\UpdateStockBalance;
+use Application\ReadModel\BalanceRepository;
 use Application\Service\CreateReceiptNote\CreateReceiptNoteService;
 use Application\Service\PlacePurchaseOrder\PlacePurchaseOrderService;
 use Common\EventDispatcher\EventDispatcher;
@@ -41,6 +43,13 @@ final class ServiceContainer
         return $service ?: $service = new ReceiptNoteRepository($this->eventDispatcher());
     }
 
+    public function balanceRepository(): BalanceRepository
+    {
+        static $service;
+
+        return $service ?: $service = new BalanceRepository($this->eventDispatcher());
+    }
+
     private function eventDispatcher(): EventDispatcher
     {
         static $service;
@@ -50,6 +59,10 @@ final class ServiceContainer
             $service->registerSubscriber(
                 GoodsReceived::class,
                 [$this->updatePurchaseOrderSubscriber(), 'whenGoodsReceived']
+            );
+            $service->registerSubscriber(
+                GoodsReceived::class,
+                [$this->updateStockBalanceSubscriber(), 'whenGoodsReceived']
             );
         }
 
@@ -61,5 +74,12 @@ final class ServiceContainer
         static $service;
 
         return $service ?: $service = new UpdatePurchaseOrder($this);
+    }
+
+    private function updateStockBalanceSubscriber(): UpdateStockBalance
+    {
+        static $service;
+
+        return $service ?: $service = new UpdateStockBalance($this);
     }
 }

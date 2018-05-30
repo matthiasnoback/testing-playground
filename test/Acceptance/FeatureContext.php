@@ -7,6 +7,8 @@ use Application\Service\CreateReceiptNote\CreateReceiptNote;
 use Application\Service\PlacePurchaseOrder\Line as PurchaseOrderLine;
 use Application\Service\PlacePurchaseOrder\PlacePurchaseOrder;
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
+use Domain\Model\Product\ProductId;
 use Domain\Model\PurchaseOrder\PurchaseOrder;
 use Domain\Model\ReceiptNote\ReceiptNote;
 use Infrastructure\ServiceContainer;
@@ -106,5 +108,17 @@ final class FeatureContext implements Context
     public function iExpectThePurchaseOrderToBeFullyDelivered(): void
     {
         assertTrue($this->purchaseOrder->isFullyDelivered());
+    }
+
+    /**
+     * @Then the stock level for product :productName will be :stockLevel
+     */
+    public function theStockLevelForProductWillBe(string $productName, string $stockLevel)
+    {
+        $balance = $this->container->balanceRepository()->getBalanceFor(
+            ProductId::fromString($this->productIds[$productName])
+        );
+
+        assertEquals((float)$stockLevel, $balance->stockLevel()->asFloat());
     }
 }
