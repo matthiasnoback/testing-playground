@@ -8,11 +8,4 @@ use Behat\Behat\Tester\Exception\PendingException;
 
 final class FeatureContext implements Context
 {
-    /**
-     * @Given /^I am a pending step$/
-     */
-    public function iAmAPendingStep(): void
-    {
-        throw new PendingException();
-    }
 }

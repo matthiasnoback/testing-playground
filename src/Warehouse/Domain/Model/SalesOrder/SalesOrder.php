@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Warehouse\Domain\Model\SalesOrder;
 
+use Common\Aggregate;
 use Common\AggregateId;
 use Warehouse\Domain\Model\Product\ProductId;
 
-final class SalesOrder
+final class SalesOrder extends Aggregate
 {
     /**
      * @var SalesOrderId
