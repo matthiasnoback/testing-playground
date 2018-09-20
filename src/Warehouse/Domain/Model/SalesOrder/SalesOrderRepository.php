@@ -8,4 +8,6 @@ interface SalesOrderRepository
     public function save(SalesOrder $aggregate): void;
 
     public function getById(SalesOrderId $aggregateId): SalesOrder;
+
+    public function nextIdentity(): SalesOrderId;
 }

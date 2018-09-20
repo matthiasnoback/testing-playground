@@ -12,15 +12,21 @@ final class Product extends Aggregate
      */
     private $productId;
 
-    private function __construct(ProductId $productId)
+    /**
+     * @var string
+     */
+    private $description;
+
+    private function __construct(ProductId $productId, string $description)
     {
         $this->productId = $productId;
         $this->recordThat(new ProductWasCreated($productId));
+        $this->description = $description;
     }
 
-    public static function create(ProductId $productId): Product
+    public static function create(ProductId $productId, string $description): Product
     {
-        return new self($productId);
+        return new self($productId, $description);
     }
 
     public function id(): AggregateId
@@ -31,5 +37,10 @@ final class Product extends Aggregate
     public function productId(): ProductId
     {
         return $this->productId;
+    }
+
+    public function description(): string
+    {
+        return $this->description;
     }
 }

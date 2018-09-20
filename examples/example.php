@@ -1,36 +1,34 @@
 <?php
 declare(strict_types=1);
 
+use Warehouse\Infrastructure\ServiceContainer;
+
 require __DIR__ . '/../vendor/autoload.php';
 
-use Common\EventDispatcher\EventDispatcher;
-use Warehouse\Application\ReceiveGoodsService;
-use Warehouse\Domain\Model\Product\Product;
-use Warehouse\Domain\Model\PurchaseOrder\PurchaseOrder;
-use Warehouse\Infrastructure\ProductAggregateRepository;
-use Warehouse\Infrastructure\PurchaseOrderAggregateRepository;
-use Warehouse\Infrastructure\ReceiptNoteAggregateRepository;
+$container = new ServiceContainer();
 
-$eventDispatcher = new EventDispatcher();
-$productRepository = new ProductAggregateRepository($eventDispatcher);
-$purchaseOrderRepository = new PurchaseOrderAggregateRepository($eventDispatcher);
-$receiptNoteRepository = new ReceiptNoteAggregateRepository($eventDispatcher);
+$product = $container->createProductService()->create('Product A');
 
-$product1 = Product::create($productRepository->nextIdentity());
-$productRepository->save($product1);
+$purchaseOrder = $container->placePurchaseOrderService()->place([
+    (string)$product->productId() => 10
+]);
 
-$purchaseOrder = PurchaseOrder::create(
-    $purchaseOrderRepository->nextIdentity()
-);
-$purchaseOrder->addLine($product1->productId(), 10);
-$purchaseOrderRepository->save($purchaseOrder);
-
-$service = new ReceiveGoodsService($purchaseOrderRepository, $receiptNoteRepository);
-$receiptNote = $service->receive(
+$receiptNote = $container->receiveGoodsService()->receive(
     (string)$purchaseOrder->purchaseOrderId(),
     [
-        (string)$product1->productId() => 5
+        (string)$product->productId() => 5
     ]
 );
 
-dump($receiptNote);
+$salesOrder = $container->placeSalesOrderService()->place([
+    (string)$product->productId() => 7
+]);
+
+$deliveryNote = $container->deliverGoodsService()->deliver(
+    (string)$salesOrder->salesOrderId(),
+    [
+        (string)$product->productId() => 3
+    ]
+);
+
+dump($container->balanceRepository()->findAll());
