@@ -16,12 +16,12 @@ final class ReceivedGoods
     /**
      * @var int
      */
-    private $quanitity;
+    private $quantity;
 
-    public function __construct(ProductId $productId, int $quanitity)
+    public function __construct(ProductId $productId, int $quantity)
     {
-        Assertion::greaterThan($quanitity, 0);
+        Assertion::greaterThan($quantity, 0);
         $this->productId = $productId;
-        $this->quanitity = $quanitity;
+        $this->quantity = $quantity;
     }
 }
