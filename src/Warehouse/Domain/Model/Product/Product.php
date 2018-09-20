@@ -12,22 +12,20 @@ final class Product extends Aggregate
      */
     private $productId;
 
-    private function __construct()
+    private function __construct(ProductId $productId)
     {
+        $this->productId = $productId;
+        $this->recordThat(new ProductWasCreated($productId));
+    }
+
+    public static function create(ProductId $productId): Product
+    {
+        return new self($productId);
     }
 
     public function id(): AggregateId
     {
         return $this->productId;
-    }
-
-    public static function create(ProductId $productId): Product
-    {
-        $product = new self();
-
-        $product->productId = $productId;
-
-        return $product;
     }
 
     public function productId(): ProductId

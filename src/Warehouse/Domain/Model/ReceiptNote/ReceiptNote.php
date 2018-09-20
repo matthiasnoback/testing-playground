@@ -25,18 +25,16 @@ final class ReceiptNote extends Aggregate
      */
     private $receivedGoods = [];
 
-    private function __construct()
+    private function __construct(ReceiptNoteId $receiptNoteId, PurchaseOrderId $purchaseOrderId)
     {
+        $this->receiptNoteId = $receiptNoteId;
+        $this->purchaseOrderId = $purchaseOrderId;
+
     }
 
     public static function create(ReceiptNoteId $receiptNoteId, PurchaseOrderId $purchaseOrderId): ReceiptNote
     {
-        $receiptNote = new self();
-
-        $receiptNote->receiptNoteId = $receiptNoteId;
-        $receiptNote->purchaseOrderId = $purchaseOrderId;
-
-        return $receiptNote;
+        return new self($receiptNoteId, $purchaseOrderId);
     }
 
     public function id(): AggregateId
@@ -47,6 +45,8 @@ final class ReceiptNote extends Aggregate
     public function receiveGoods(ProductId $productId, $quantity): void
     {
         $this->receivedGoods[] = new ReceivedGoods($productId, $quantity);
+
+        $this->recordThat(new GoodsReceived($productId, $quantity));
     }
 
     public function purchaseOrderId(): PurchaseOrderId
