@@ -37,6 +37,11 @@ final class PurchaseOrder extends Aggregate
         return $this->purchaseOrderId;
     }
 
+    public function purchaseOrderId(): PurchaseOrderId
+    {
+        return $this->purchaseOrderId;
+    }
+
     public function addLine(ProductId $productId, int $quantity): void
     {
         $this->lines[] = new PurchaseOrderLine($productId, $quantity);
