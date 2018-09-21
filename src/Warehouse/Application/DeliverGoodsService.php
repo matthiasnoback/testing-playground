@@ -5,6 +5,7 @@ namespace Warehouse\Application;
 
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNote;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
+use Warehouse\Domain\Model\Product\Balance\BalanceRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderId;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
@@ -19,12 +20,19 @@ final class DeliverGoodsService
      */
     private $deliveryNoteRepository;
 
+    /**
+     * @var BalanceRepository
+     */
+    private $balanceRepository;
+
     public function __construct(
         SalesOrderRepository $salesOrderRepository,
-        DeliveryNoteRepository $deliveryNoteRepository
+        DeliveryNoteRepository $deliveryNoteRepository,
+        BalanceRepository $balanceRepository
     ) {
         $this->salesOrderRepository = $salesOrderRepository;
         $this->deliveryNoteRepository = $deliveryNoteRepository;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function deliver(string $salesOrderId, array $productsAndQuantities): DeliveryNote
@@ -43,10 +51,14 @@ final class DeliverGoodsService
                 continue;
             }
 
+            $balance = $this->balanceRepository->getByProductId($line->productId());
+
             $receivedQuantity = $productsAndQuantities[(string)$line->productId()];
+
             $deliveryNote->deliverGoods(
                 $line->productId(),
-                $receivedQuantity
+                $receivedQuantity,
+                $balance->getQuantityInStock()
             );
         }
 

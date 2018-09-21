@@ -41,8 +41,12 @@ final class DeliveryNote extends Aggregate
         return $this->deliveryNoteId;
     }
 
-    public function deliverGoods(ProductId $productId, $quantity): void
+    public function deliverGoods(ProductId $productId, int $quantity, int $quantityInStock): void
     {
+        if ($quantity > $quantityInStock) {
+            throw new \RuntimeException('Quantity in stock is insufficient');
+        }
+
         $this->deliveredGoods[] = new DeliveredGoods($productId, $quantity);
 
         $this->recordThat(new GoodsDelivered($productId, $quantity));
