@@ -13,3 +13,8 @@ Feature:
     And I placed a sales order with product "A", quantity 4
     When I create a delivery note for this sales order, delivering 4 items of product "A"
     Then the stock level for product "A" will be 3
+
+  Scenario: Delivering more than we currently have in stock
+    Given I have previously received product "A", quantity 4
+    When I placed a sales order with product "A", quantity 7
+    Then I can't create a delivery note for this sales order, delivering 7 items of product "A" because "Quantity in stock is insufficient"
