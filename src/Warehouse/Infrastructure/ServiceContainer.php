@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Warehouse\Infrastructure;
 
 use Common\EventDispatcher\EventDispatcher;
+use Warehouse\Application\CancelSalesOrderService;
 use Warehouse\Application\CreateProductService;
 use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
@@ -15,6 +16,8 @@ use Warehouse\Domain\Model\Product\Balance\InMemoryBalanceRepository;
 use Warehouse\Domain\Model\Product\ProductRepository;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
+use Warehouse\Domain\Model\Stock\StockManager;
+use Warehouse\Domain\Model\Stock\StockRepository;
 
 final class ServiceContainer
 {
@@ -72,6 +75,7 @@ final class ServiceContainer
             $service = new EventDispatcher();
 
             $service->subscribeToAllEvents($this->balanceProjector());
+            $service->subscribeToAllEvents($this->stockManager());
         }
 
         return $service;
@@ -110,5 +114,31 @@ final class ServiceContainer
         static $service;
 
         return $service ?: $service = new PurchaseOrderAggregateRepository($this->eventDispatcher());
+    }
+
+    public function cancelSalesOrderService(): CancelSalesOrderService
+    {
+        static $service;
+
+        return $service ?: $service = new CancelSalesOrderService($this->salesOrderRepository());
+    }
+
+    private function stockManager(): StockManager
+    {
+        static $service;
+
+        return $service ?: $service = new StockManager(
+            $this->stockRepository(),
+            $this->salesOrderRepository()
+        );
+    }
+
+    private function stockRepository(): StockRepository
+    {
+        static $service;
+
+        return $service ?: $service = new StockAggregateRepository(
+            $this->eventDispatcher()
+        );
     }
 }

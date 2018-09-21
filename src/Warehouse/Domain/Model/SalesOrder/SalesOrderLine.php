@@ -17,6 +17,8 @@ final class SalesOrderLine
      */
     private $quantity;
 
+    private $isReserved = false;
+
     public function __construct(ProductId $productId, int $quantity)
     {
         $this->productId = $productId;
@@ -31,5 +33,20 @@ final class SalesOrderLine
     public function quantity(): int
     {
         return $this->quantity;
+    }
+
+    public function markReserved(): void
+    {
+        $this->isReserved = true;
+    }
+
+    public function isReserved(): bool
+    {
+        return $this->isReserved;
+    }
+
+    public function markReleased(): void
+    {
+        $this->isReserved = false;
     }
 }

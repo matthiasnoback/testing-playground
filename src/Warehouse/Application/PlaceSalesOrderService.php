@@ -29,6 +29,8 @@ final class PlaceSalesOrderService
             $salesOrder->addLine(ProductId::fromString($productId), $quantity);
         }
 
+        $salesOrder->place();
+
         $this->salesOrderRepository->save($salesOrder);
 
         return $salesOrder;

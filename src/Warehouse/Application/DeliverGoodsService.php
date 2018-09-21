@@ -20,19 +20,12 @@ final class DeliverGoodsService
      */
     private $deliveryNoteRepository;
 
-    /**
-     * @var BalanceRepository
-     */
-    private $balanceRepository;
-
     public function __construct(
         SalesOrderRepository $salesOrderRepository,
-        DeliveryNoteRepository $deliveryNoteRepository,
-        BalanceRepository $balanceRepository
+        DeliveryNoteRepository $deliveryNoteRepository
     ) {
         $this->salesOrderRepository = $salesOrderRepository;
         $this->deliveryNoteRepository = $deliveryNoteRepository;
-        $this->balanceRepository = $balanceRepository;
     }
 
     public function deliver(string $salesOrderId, array $productsAndQuantities): DeliveryNote
@@ -40,6 +33,10 @@ final class DeliverGoodsService
         $salesOrder = $this->salesOrderRepository->getById(
             SalesOrderId::fromString($salesOrderId)
         );
+
+        if ($salesOrder->isNotDeliverable()) {
+            throw new \RuntimeException('Sales order is not deliverable.');
+        }
 
         $deliveryNote = DeliveryNote::create(
             $this->deliveryNoteRepository->nextIdentity(),
@@ -51,14 +48,11 @@ final class DeliverGoodsService
                 continue;
             }
 
-            $balance = $this->balanceRepository->getByProductId($line->productId());
-
             $receivedQuantity = $productsAndQuantities[(string)$line->productId()];
 
             $deliveryNote->deliverGoods(
                 $line->productId(),
-                $receivedQuantity,
-                $balance->getQuantityInStock()
+                $receivedQuantity
             );
         }
 

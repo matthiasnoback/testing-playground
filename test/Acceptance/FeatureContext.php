@@ -112,6 +112,7 @@ final class FeatureContext implements Context
 
     /**
      * @Given I placed a sales order with product :productDescription, quantity :quantity
+     * @Given I place a sales order with product :productDescription, quantity :quantity
      */
     public function iPlacedASalesOrderWithProductQuantity($productDescription, $quantity)
     {
@@ -160,4 +161,14 @@ final class FeatureContext implements Context
             assertEquals($exceptionMessage, $exception->getMessage());
         }
     }
+
+    /**
+     * @When I cancel this sales order
+     */
+    public function iCancelThisSalesOrder(): void
+    {
+        $this->container->cancelSalesOrderService()->cancel($this->salesOrderId);
+
+    }
+
 }

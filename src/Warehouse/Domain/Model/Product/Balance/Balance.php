@@ -39,7 +39,7 @@ class Balance
         );
     }
 
-    public function decreasedBy(int $quantity)
+    public function decreasedBy(int $quantity): Balance
     {
         return new Balance(
             $this->getProductId(),

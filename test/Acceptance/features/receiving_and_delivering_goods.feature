@@ -16,5 +16,16 @@ Feature:
 
   Scenario: Delivering more than we currently have in stock
     Given I have previously received product "A", quantity 4
-    When I placed a sales order with product "A", quantity 7
-    Then I can't create a delivery note for this sales order, delivering 7 items of product "A" because "Quantity in stock is insufficient"
+    When I place a sales order with product "A", quantity 7
+    Then I can't create a delivery note for this sales order, delivering 7 items of product "A" because "Sales order is not deliverable."
+
+  Scenario: Making a reservation of goods
+    Given I have previously received product "A", quantity 4
+    When I place a sales order with product "A", quantity 3
+    Then the stock level for product "A" will be 1
+
+  Scenario:
+    Given I have previously received product "A", quantity 4
+    And I placed a sales order with product "A", quantity 3
+    When I cancel this sales order
+    Then the stock level for product "A" will be 4

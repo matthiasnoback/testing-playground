@@ -5,6 +5,8 @@ namespace Warehouse\Domain\Model\Product\Balance;
 use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
 use Warehouse\Domain\Model\Product\ProductWasCreated;
 use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
+use Warehouse\Domain\Model\Stock\GoodsWereReserved;
+use Warehouse\Domain\Model\Stock\StockWasIncreased;
 
 class BalanceProjector
 {
@@ -23,11 +25,11 @@ class BalanceProjector
         if ($event instanceof ProductWasCreated) {
             $this->projectProductWasCreated($event);
         }
-        if ($event instanceof GoodsReceived) {
-            $this->projectGoodsReceived($event);
+        if ($event instanceof StockWasIncreased) {
+            $this->projectStockWasIncreased($event);
         }
-        if ($event instanceof GoodsDelivered) {
-            $this->projectGoodsDelivered($event);
+        if ($event instanceof StockWasDecreased) {
+            $this->projectStockWasDecreased($event);
         }
     }
 
@@ -37,13 +39,13 @@ class BalanceProjector
         $this->balanceRepository->save($balance);
     }
 
-    private function projectGoodsReceived(GoodsReceived $event): void
+    private function projectStockWasIncreased(StockWasIncreased $event): void
     {
         $balance = $this->balanceRepository->getByProductId($event->getProductId());
         $this->balanceRepository->save($balance->increasedBy($event->getQuantity()));
     }
 
-    private function projectGoodsDelivered(GoodsDelivered $event): void
+    private function projectStockWasDecreased(StockWasDecreased $event): void
     {
         $balance = $this->balanceRepository->getByProductId($event->getProductId());
         $this->balanceRepository->save($balance->decreasedBy($event->getQuantity()));
