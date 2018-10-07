@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Warehouse\Domain\Model\SalesOrder;
 
+use Assert\Assertion;
 use Common\Aggregate;
 use Common\AggregateId;
+use LogicException;
 use Warehouse\Domain\Model\Product\ProductId;
 
 final class SalesOrder extends Aggregate
@@ -18,6 +20,11 @@ final class SalesOrder extends Aggregate
      * @var array|SalesOrderLine[]
      */
     private $lines = [];
+
+    /**
+     * @var bool
+     */
+    private $wasPlaced = false;
 
     private function __construct()
     {
@@ -44,7 +51,18 @@ final class SalesOrder extends Aggregate
 
     public function addLine(ProductId $productId, int $quantity): void
     {
+        Assertion::false($this->wasPlaced, 'You cannot add lines to an already placed sales order.');
+
         $this->lines[] = new SalesOrderLine($productId, $quantity);
+    }
+
+    public function place(): void
+    {
+        if (\count($this->lines) === 0) {
+            throw new LogicException('A sales order should have at least one line');
+        }
+
+        $this->wasPlaced = true;
     }
 
     /**
