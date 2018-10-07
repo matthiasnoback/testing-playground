@@ -29,6 +29,8 @@ final class PlacePurchaseOrderService
             $purchaseOrder->addLine(ProductId::fromString($productId), $quantity);
         }
 
+        $purchaseOrder->place();
+
         $this->purchaseOrderRepository->save($purchaseOrder);
 
         return $purchaseOrder;
