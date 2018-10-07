@@ -37,6 +37,11 @@ final class SalesOrder extends Aggregate
         return $this->salesOrderId;
     }
 
+    public function salesOrderId(): SalesOrderId
+    {
+        return $this->salesOrderId;
+    }
+
     public function addLine(ProductId $productId, int $quantity): void
     {
         $this->lines[] = new SalesOrderLine($productId, $quantity);
