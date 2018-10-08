@@ -52,4 +52,9 @@ class Balance
 
         return $balance;
     }
+
+    public function quantityInStock()
+    {
+        return $this->stock;
+    }
 }

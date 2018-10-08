@@ -21,5 +21,9 @@ interface BalanceRepository
 {
     public function save(Balance $balance);
 
+    /**
+     * @param ProductId $productId
+     * @return Balance
+     */
     public function getByProductId(ProductId $productId);
 }

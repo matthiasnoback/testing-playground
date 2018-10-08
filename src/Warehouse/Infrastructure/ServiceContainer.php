@@ -83,7 +83,7 @@ final class ServiceContainer
         return $service ?: $service = new SalesOrderAggregateRepository($this->eventDispatcher());
     }
 
-    private function balanceRepository(): BalanceRepository
+    public function balanceRepository(): BalanceRepository
     {
         static $service;
 
@@ -107,11 +107,6 @@ final class ServiceContainer
             $service->registerSubscriber(ProductCreated::class, [$this->balanceSubscriber(), 'onProductCreated']);
             $service->registerSubscriber(GoodsReceived::class, [$this->balanceSubscriber(), 'onGoodsReceived']);
             $service->registerSubscriber(GoodsDelivered::class, [$this->balanceSubscriber(), 'onGoodsDelivered']);
-
-            // Register your event subscribers here
-            $service->subscribeToAllEvents(function ($event) {
-                echo get_class($event) . PHP_EOL;
-            });
         }
 
         return $service;

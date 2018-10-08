@@ -35,8 +35,6 @@ class BalanceSubscriber
         $balance = new Balance($productCreated->getProductId(), $productCreated->getDescription());
 
         $this->balanceRepository->save($balance);
-
-        dump($balance);
     }
 
     public function onGoodsReceived(GoodsReceived $goodsReceived)
@@ -46,8 +44,6 @@ class BalanceSubscriber
         $balance = $balance->increase($goodsReceived->getQuantity());
 
         $this->balanceRepository->save($balance);
-
-        dump($balance);
     }
 
     public function onGoodsDelivered(GoodsDelivered $goodsDelivered)
@@ -57,7 +53,5 @@ class BalanceSubscriber
         $balance = $balance->decrease($goodsDelivered->getQuantity());
 
         $this->balanceRepository->save($balance);
-
-        dump($balance);
     }
 }
