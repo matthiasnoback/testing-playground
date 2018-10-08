@@ -41,11 +41,15 @@ class ReceiptNote extends Aggregate
         $this->receiptNoteId = $receiptNoteId;
         $this->purchaseOrderId = $purchaseOrderId;
         $this->lines = [];
+
+        $this->recordThat(new ReceiptNoteCreated($receiptNoteId, $purchaseOrderId));
     }
 
     public function addLine(ProductId $productId, $quantity)
     {
         $this->lines[] = new ReceiptNoteLine($productId, $quantity);
+
+        $this->recordThat(new GoodsReceived($productId, $quantity));
     }
 
     public function id(): AggregateId

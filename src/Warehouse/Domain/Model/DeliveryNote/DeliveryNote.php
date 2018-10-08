@@ -29,7 +29,7 @@ class DeliveryNote extends Aggregate
      */
     private $deliveryNoteId;
     /**
-     * @var PurchaseOrderId
+     * @var SalesOrderId
      */
     private $salesOrderId;
 
@@ -42,11 +42,15 @@ class DeliveryNote extends Aggregate
         $this->deliveryNoteId = $deliveryNoteId;
         $this->salesOrderId = $salesOrderId;
         $this->lines = [];
+
+        $this->recordThat(new DeliveryNoteCreated($deliveryNoteId, $salesOrderId));
     }
 
     public function addLine(ProductId $productId, $quantity)
     {
         $this->lines[] = new DeliveryNoteLine($productId, $quantity);
+
+        $this->recordThat(new GoodsDelivered($productId, $quantity));
     }
 
     public function id(): AggregateId

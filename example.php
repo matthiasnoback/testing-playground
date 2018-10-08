@@ -33,3 +33,4 @@ $deliverNote = $serviceContainer->deliverGoods()->deliver(
     ]
 );
 dump($deliverNote);
+

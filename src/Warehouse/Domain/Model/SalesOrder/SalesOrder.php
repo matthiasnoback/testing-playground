@@ -32,11 +32,13 @@ final class SalesOrder extends Aggregate
 
     public static function create(SalesOrderId $salesOrderId): SalesOrder
     {
-        $SalesOrder = new self();
+        $salesOrder = new self();
 
-        $SalesOrder->salesOrderId = $salesOrderId;
+        $salesOrder->salesOrderId = $salesOrderId;
 
-        return $SalesOrder;
+        $salesOrder->recordThat(new SalesOrderCreated($salesOrderId));
+
+        return $salesOrder;
     }
 
     public function id(): AggregateId

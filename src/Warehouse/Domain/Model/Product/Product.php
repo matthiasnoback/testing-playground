@@ -33,6 +33,8 @@ final class Product extends Aggregate
         $product->productId = $productId;
         $product->description = $description;
 
+        $product->recordThat(new ProductCreated($productId, $description));
+
         return $product;
     }
 

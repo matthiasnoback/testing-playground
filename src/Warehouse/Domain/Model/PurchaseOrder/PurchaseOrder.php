@@ -36,6 +36,8 @@ final class PurchaseOrder extends Aggregate
 
         $purchaseOrder->purchaseOrderId = $purchaseOrderId;
 
+        $purchaseOrder->recordThat(new PurchaseOrderCreated($purchaseOrderId));
+
         return $purchaseOrder;
     }
 
