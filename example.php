@@ -19,3 +19,17 @@ $salesOrder = $serviceContainer->placeSalesOrderService()->place([
     (string)$product->productId() => 4
 ]);
 dump($salesOrder);
+
+$receiptNote = $serviceContainer->receiveGoods()->receive(
+    (string) $purchaseOrder->purchaseOrderId(), [
+        (string) $product->productId() => 10
+    ]
+);
+dump($receiptNote);
+
+$deliverNote = $serviceContainer->deliverGoods()->deliver(
+    (string) $salesOrder->salesOrderId(), [
+        (string) $product->productId() => 4
+    ]
+);
+dump($deliverNote);

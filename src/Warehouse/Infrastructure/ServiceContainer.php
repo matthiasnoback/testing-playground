@@ -5,9 +5,13 @@ namespace Warehouse\Infrastructure;
 
 use Common\EventDispatcher\EventDispatcher;
 use Warehouse\Application\CreateProductService;
+use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
+use Warehouse\Application\ReceiveGoodsService;
+use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
 use Warehouse\Domain\Model\Product\ProductRepository;
+use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
 final class ServiceContainer
@@ -25,6 +29,31 @@ final class ServiceContainer
     public function placeSalesOrderService(): PlaceSalesOrderService
     {
         return new PlaceSalesOrderService($this->salesOrderRepository());
+    }
+
+    public function receiveGoods(): ReceiveGoodsService
+    {
+        return new ReceiveGoodsService(
+            $this->purchaseOrderRepository(),
+            $this->receiptNoteRepository(),
+            $this->productRepository()
+        );
+    }
+
+    private function receiptNoteRepository(): ReceiptNoteRepository
+    {
+        static $service;
+
+        return $service ?: $service = new ReceiptNoteAggregateRepository($this->eventDispatcher());
+    }
+
+    public function deliverGoods(): DeliverGoodsService
+    {
+        return new DeliverGoodsService(
+            $this->salesOrderRepository(),
+            $this->deliveryNoteRepository(),
+            $this->productRepository()
+        );
     }
 
     private function productRepository(): ProductRepository
@@ -61,4 +90,12 @@ final class ServiceContainer
 
         return $service;
     }
+
+    private function deliveryNoteRepository(): DeliveryNoteRepository
+    {
+        static $service;
+
+        return $service ?: $service = new DeliveryNoteAggregateRepository($this->eventDispatcher());
+    }
+
 }
