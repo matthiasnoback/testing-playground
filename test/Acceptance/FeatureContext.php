@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Test\Acceptance;
 
+use Assert\Assert;
 use function assertEquals;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Warehouse\Domain\Model\Product\Product;
+use Warehouse\Domain\Model\SalesOrder\SalesOrder;
 use Warehouse\Infrastructure\ServiceContainer;
 
 final class FeatureContext implements Context
@@ -20,6 +22,11 @@ final class FeatureContext implements Context
      * @var Product
      */
     private $product;
+
+    /**
+     * @var SalesOrder
+     */
+    private $salesOrder;
 
     /**
      * @BeforeScenario
@@ -81,5 +88,33 @@ final class FeatureContext implements Context
                 (string)$this->product->productId() => (int)$quantity
             ]
         );
+    }
+
+    /**
+     * @When I create a sales order for :orderedQuantity items of this product
+     */
+    public function iCreateASalesOrderForItemsOfThisProduct($orderedQuantity)
+    {
+        $this->salesOrder = $this->serviceContainer->placeSalesOrderService()->place([
+             (string)$this->product->productId() => (int)$orderedQuantity
+        ]);
+    }
+
+    /**
+     * @Then I can not deliver the sales order
+     */
+    public function iCanNotDeliverTheSalesOrder()
+    {
+        try {
+
+            $this->serviceContainer->deliverGoods()->deliver(
+                (string) $this->salesOrder->salesOrderId(),
+                $this->salesOrder->linesToArray()
+            );
+            throw new \RuntimeException();
+
+        } catch (\RuntimeException $e) {
+            assertEquals('There is not enough stock for this product', $e->getMessage());
+        }
     }
 }

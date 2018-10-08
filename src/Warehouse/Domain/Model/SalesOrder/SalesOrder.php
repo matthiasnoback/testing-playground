@@ -74,4 +74,14 @@ final class SalesOrder extends Aggregate
     {
         return $this->lines;
     }
+
+    public function linesToArray(): array
+    {
+        $array = [];
+        foreach ($this->lines as $line) {
+            $array[(string) $line->productId()] = $line->quantity();
+        }
+
+        return $array;
+    }
 }

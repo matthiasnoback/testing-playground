@@ -14,3 +14,8 @@ Feature: Balance updates
     And I have received 10 items of this product
     When I deliver 4 items of this product
     Then the balance for this product should be 6
+
+  Scenario: Fail delivering goods when stock is not enough
+    Given a product "My product"
+    When I create a sales order for 4 items of this product
+    Then I can not deliver the sales order

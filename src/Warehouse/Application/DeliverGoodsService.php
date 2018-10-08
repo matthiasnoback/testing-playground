@@ -32,14 +32,18 @@ class DeliverGoodsService
 
     private $productRepository;
 
+    private $balanceRepository;
+
     public function __construct(
         SalesOrderRepository $salesOrderRepository,
         DeliveryNoteRepository $deliverNoteRepository,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        BalanceRepository $balanceRepository
     ) {
         $this->salesOrderRepository = $salesOrderRepository;
         $this->deliverNoteRepository = $deliverNoteRepository;
         $this->productRepository = $productRepository;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function deliver(string $salesOrderId, array $productsAndQuantities): DeliveryNote
@@ -52,6 +56,11 @@ class DeliverGoodsService
 
         foreach ($productsAndQuantities as $productId => $quantity) {
             $product = $this->productRepository->getById(ProductId::fromString($productId));
+
+            $balance = $this->balanceRepository->getByProductId($product->productId());
+            if (!$balance->isStockSufficient($quantity)) {
+                throw new \RuntimeException('There is not enough stock for this product');
+            }
 
             $deliverNote->addLine($product->productId(), $quantity);
         }

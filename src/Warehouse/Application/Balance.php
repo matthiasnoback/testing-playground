@@ -57,4 +57,9 @@ class Balance
     {
         return $this->stock;
     }
+
+    public function isStockSufficient($quantity)
+    {
+        return $this->stock >= $quantity;
+    }
 }
