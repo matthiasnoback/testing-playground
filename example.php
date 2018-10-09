@@ -28,9 +28,7 @@ $receiptNote = $serviceContainer->receiveGoods()->receive(
 dump($receiptNote);
 
 $deliverNote = $serviceContainer->deliverGoods()->deliver(
-    (string) $salesOrder->salesOrderId(), [
-        (string) $product->productId() => 4
-    ]
+    (string) $salesOrder->salesOrderId()
 );
 dump($deliverNote);
 

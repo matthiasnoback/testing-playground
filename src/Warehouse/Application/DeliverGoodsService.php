@@ -32,37 +32,29 @@ class DeliverGoodsService
 
     private $productRepository;
 
-    private $balanceRepository;
-
     public function __construct(
         SalesOrderRepository $salesOrderRepository,
         DeliveryNoteRepository $deliverNoteRepository,
-        ProductRepository $productRepository,
-        BalanceRepository $balanceRepository
+        ProductRepository $productRepository
     ) {
         $this->salesOrderRepository = $salesOrderRepository;
         $this->deliverNoteRepository = $deliverNoteRepository;
         $this->productRepository = $productRepository;
-        $this->balanceRepository = $balanceRepository;
     }
 
-    public function deliver(string $salesOrderId, array $productsAndQuantities): DeliveryNote
+    public function deliver(string $salesOrderId): DeliveryNote
     {
         $salesOrder = $this->salesOrderRepository->getById(SalesOrderId::fromString($salesOrderId));
+        if (!$salesOrder->isDeliverable()) {
+            throw new \RuntimeException('Sorry... Your order can not be delivered. Too bad ...');
+        }
 
         $deliverNoteId = $this->deliverNoteRepository->nextIdentity();
 
         $deliverNote = new DeliveryNote($deliverNoteId, $salesOrder->salesOrderId());
 
-        foreach ($productsAndQuantities as $productId => $quantity) {
-            $product = $this->productRepository->getById(ProductId::fromString($productId));
-
-            $balance = $this->balanceRepository->getByProductId($product->productId());
-            if (!$balance->isStockSufficient($quantity)) {
-                throw new \RuntimeException('There is not enough stock for this product');
-            }
-
-            $deliverNote->addLine($product->productId(), $quantity);
+        foreach ($salesOrder->lines() as $salesOrderLine) {
+            $deliverNote->addLine($salesOrderLine->productId(), $salesOrderLine->quantity());
         }
 
         $this->deliverNoteRepository->save($deliverNote);

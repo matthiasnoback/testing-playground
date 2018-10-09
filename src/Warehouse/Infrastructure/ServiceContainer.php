@@ -13,12 +13,14 @@ use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
 use Warehouse\Application\ReceiveGoodsService;
 use Warehouse\Application\YoloSubscriber;
+use Warehouse\Domain\Model\Balance\ReservationAccepted;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
 use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
 use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Product\ProductRepository;
 use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
+use Warehouse\Domain\Model\SalesOrder\SalesOrderLineAdded;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
 final class ServiceContainer
@@ -59,8 +61,7 @@ final class ServiceContainer
         return new DeliverGoodsService(
             $this->salesOrderRepository(),
             $this->deliveryNoteRepository(),
-            $this->productRepository(),
-            $this->balanceRepository()
+            $this->productRepository()
         );
     }
 
@@ -110,7 +111,10 @@ final class ServiceContainer
     {
         static $service;
 
-        return $service ?: $service = new YoloSubscriber($this->balanceAggregateRepository());
+        return $service ?: $service = new YoloSubscriber(
+            $this->balanceAggregateRepository(),
+            $this->salesOrderRepository()
+        );
     }
 
     private function eventDispatcher(): EventDispatcher
@@ -125,6 +129,8 @@ final class ServiceContainer
             $service->registerSubscriber(GoodsDelivered::class, [$this->balanceSubscriber(), 'onGoodsDelivered']);
             $service->registerSubscriber(ProductCreated::class, [$this->yoloSubscriber(), 'onProductCreated']);
             $service->registerSubscriber(GoodsReceived::class, [$this->yoloSubscriber(), 'onGoodsReceived']);
+            $service->registerSubscriber(ReservationAccepted::class, [$this->yoloSubscriber(), 'onReservationAccepted']);
+            $service->registerSubscriber(SalesOrderLineAdded::class, [$this->yoloSubscriber(), 'onSalesOrderLineAdded']);
         }
 
         return $service;

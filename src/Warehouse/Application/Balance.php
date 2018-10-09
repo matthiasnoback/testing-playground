@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 namespace Warehouse\Application;
+
 use Warehouse\Domain\Model\Product\ProductId;
 
 /**

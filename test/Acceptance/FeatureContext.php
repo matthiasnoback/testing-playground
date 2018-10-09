@@ -83,10 +83,7 @@ final class FeatureContext implements Context
             (string)$this->product->productId() => (int)$quantity
         ]);
         $this->serviceContainer->deliverGoods()->deliver(
-            (string)$salesOrder->salesOrderId(),
-            [
-                (string)$this->product->productId() => (int)$quantity
-            ]
+            (string)$salesOrder->salesOrderId()
         );
     }
 
@@ -106,15 +103,12 @@ final class FeatureContext implements Context
     public function iCanNotDeliverTheSalesOrder()
     {
         try {
-
             $this->serviceContainer->deliverGoods()->deliver(
-                (string) $this->salesOrder->salesOrderId(),
-                $this->salesOrder->linesToArray()
+                (string) $this->salesOrder->salesOrderId()
             );
             throw new \RuntimeException();
-
         } catch (\RuntimeException $e) {
-            assertEquals('There is not enough stock for this product', $e->getMessage());
+            assertContains('Your order can not be delivered', $e->getMessage());
         }
     }
 

@@ -12,10 +12,8 @@ declare(strict_types=1);
  */
 
 namespace Warehouse\Application;
-use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
+
 use Warehouse\Domain\Model\Product\ProductCreated;
-use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
-use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteCreated;
 
 /**
  */

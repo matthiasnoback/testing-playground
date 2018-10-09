@@ -56,6 +56,7 @@ final class SalesOrder extends Aggregate
         Assertion::false($this->wasPlaced, 'You cannot add lines to an already placed sales order.');
 
         $this->lines[(string) $productId] = new SalesOrderLine($productId, $quantity);
+        $this->recordThat(new SalesOrderLineAdded($this->salesOrderId, $productId, $quantity));
     }
 
     public function place(): void
@@ -73,16 +74,6 @@ final class SalesOrder extends Aggregate
     public function lines(): array
     {
         return $this->lines;
-    }
-
-    public function linesToArray(): array
-    {
-        $array = [];
-        foreach ($this->lines as $line) {
-            $array[(string) $line->productId()] = $line->quantity();
-        }
-
-        return $array;
     }
 
     public function isDeliverable(): bool
