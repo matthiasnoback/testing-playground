@@ -12,10 +12,8 @@ declare(strict_types=1);
  */
 
 namespace Warehouse\Application;
-use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
+use Warehouse\Domain\Model\Balance\StockLevelChanged;
 use Warehouse\Domain\Model\Product\ProductCreated;
-use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
-use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteCreated;
 
 /**
  * @author Julian Prud'homme <julian.prudhomme@akeneo.com>
@@ -37,20 +35,11 @@ class BalanceSubscriber
         $this->balanceRepository->save($balance);
     }
 
-    public function onGoodsReceived(GoodsReceived $goodsReceived)
+    public function onStockLevelChanged(StockLevelChanged $stockLevelChanged)
     {
-        $balance = $this->balanceRepository->getByProductId($goodsReceived->getProductId());
+        $balance = $this->balanceRepository->getByProductId($stockLevelChanged->productId());
 
-        $balance = $balance->increase($goodsReceived->getQuantity());
-
-        $this->balanceRepository->save($balance);
-    }
-
-    public function onGoodsDelivered(GoodsDelivered $goodsDelivered)
-    {
-        $balance = $this->balanceRepository->getByProductId($goodsDelivered->getProductId());
-
-        $balance = $balance->decrease($goodsDelivered->getQuantity());
+        $balance->setQuantityInStock($stockLevelChanged->quantityInStock());
 
         $this->balanceRepository->save($balance);
     }

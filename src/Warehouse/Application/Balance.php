@@ -38,29 +38,13 @@ class Balance
         return $this->productId;
     }
 
-    public function increase($quantity)
-    {
-        $balance = clone $this;
-        $balance->stock += $quantity;
-
-        return $balance;
-    }
-
-    public function decrease($quantity)
-    {
-        $balance = clone $this;
-        $balance->stock -= $quantity;
-
-        return $balance;
-    }
-
     public function quantityInStock()
     {
         return $this->stock;
     }
 
-    public function isStockSufficient($quantity)
+    public function setQuantityInStock(int $quantityInStock): void
     {
-        return $this->stock >= $quantity;
+        $this->stock = $quantityInStock;
     }
 }

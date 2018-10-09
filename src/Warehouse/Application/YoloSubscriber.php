@@ -20,6 +20,7 @@ use Warehouse\Domain\Model\Balance\BalanceRepository;
 use Warehouse\Domain\Model\Balance\Balance;
 use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderLineAdded;
+use Warehouse\Domain\Model\SalesOrder\SalesOrderLineCancelled;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
 class YoloSubscriber
@@ -72,6 +73,14 @@ class YoloSubscriber
     {
         $balance = $this->balanceRepository->getByProductId($goodsDelivered->getProductId());
         $balance->commitReservation($goodsDelivered->getSalesOrderId());
+
+        $this->balanceRepository->save($balance);
+    }
+
+    public function onSalesOrderLineCancelled(SalesOrderLineCancelled $salesOrderLineCancelled)
+    {
+        $balance = $this->balanceRepository->getByProductId($salesOrderLineCancelled->getProductId());
+        $balance->cancelReservation($salesOrderLineCancelled->getSalesOrderId());
 
         $this->balanceRepository->save($balance);
     }

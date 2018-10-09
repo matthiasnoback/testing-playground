@@ -40,7 +40,7 @@ class Balance extends Aggregate
     public function makeReservation(SalesOrderId $salesOrderId, int $quantity): void
     {
         if ($quantity <= $this->quantityInStock) {
-            $this->quantityInStock -= $quantity;
+            $this->decreaseStockLevel($quantity);
             $this->reservations[(string)$salesOrderId] = $quantity;
             $this->recordThat(new ReservationAccepted($salesOrderId, $this->productId));
         } else {
@@ -51,7 +51,7 @@ class Balance extends Aggregate
     public function cancelReservation(SalesOrderId $salesOrderId): void
     {
         if (array_key_exists((string) $salesOrderId, $this->reservations)) {
-            $this->quantityInStock += $this->reservations[(string)$salesOrderId];
+            $this->increase($this->reservations[(string)$salesOrderId]);
             unset($this->reservations[(string)$salesOrderId]);
             $this->recordThat(new ReservationCancelled($salesOrderId, $this->productId));
         }
@@ -67,5 +67,15 @@ class Balance extends Aggregate
     public function increase($quantity): void
     {
         $this->quantityInStock += $quantity;
+        $this->recordThat(new StockLevelChanged($this->productId, $this->quantityInStock));
+    }
+
+    /**
+     * @param int $quantity
+     */
+    private function decreaseStockLevel(int $quantity): void
+    {
+        $this->quantityInStock -= $quantity;
+        $this->recordThat(new StockLevelChanged($this->productId, $this->quantityInStock));
     }
 }

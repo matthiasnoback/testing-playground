@@ -19,11 +19,14 @@ final class BalanceTest extends TestCase
         $balance = new Balance($productId);
 
         $balance->increase(4);
+        $balance->recordedEvents();
+
         $balance->makeReservation($salesOrderId, 2);
 
         $events = $balance->recordedEvents();
-        self::assertEquals(1, count($events));
-        self::assertInstanceOf(ReservationAccepted::class, $events[0]);
+        self::assertEquals(2, count($events));
+        self::assertInstanceOf(StockLevelChanged::class, $events[0]);
+        self::assertInstanceOf(ReservationAccepted::class, $events[1]);
     }
 
     /**
@@ -36,11 +39,13 @@ final class BalanceTest extends TestCase
         $balance = new Balance($productId);
 
         $balance->increase(2);
+        $balance->recordedEvents();
         $balance->makeReservation($salesOrderId, 2);
 
         $events = $balance->recordedEvents();
-        self::assertEquals(1, count($events));
-        self::assertInstanceOf(ReservationAccepted::class, $events[0]);
+        self::assertEquals(2, count($events));
+        self::assertInstanceOf(StockLevelChanged::class, $events[0]);
+        self::assertInstanceOf(ReservationAccepted::class, $events[1]);
     }
 
     /**
@@ -53,13 +58,16 @@ final class BalanceTest extends TestCase
         $balance = new Balance($productId);
 
         $balance->increase(2);
-        $balance->makeReservation($salesOrderId, 2);
-        $balance->makeReservation($salesOrderId, 2);
+        $balance->recordedEvents();
 
+        $balance->makeReservation($salesOrderId, 2);
+        $balance->makeReservation($salesOrderId, 2);
         $events = $balance->recordedEvents();
-        self::assertEquals(2, count($events));
-        self::assertInstanceOf(ReservationAccepted::class, $events[0]);
-        self::assertInstanceOf(ReservationRejected::class, $events[1]);
+
+        self::assertEquals(3, count($events));
+        self::assertInstanceOf(StockLevelChanged::class, $events[0]);
+        self::assertInstanceOf(ReservationAccepted::class, $events[1]);
+        self::assertInstanceOf(ReservationRejected::class, $events[2]);
     }
 
     /**
