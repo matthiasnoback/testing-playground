@@ -12,6 +12,7 @@ use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
 use Warehouse\Application\ReceiveGoodsService;
+use Warehouse\Application\YoloSubscriber;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
 use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
 use Warehouse\Domain\Model\Product\ProductCreated;
@@ -91,11 +92,25 @@ final class ServiceContainer
         return $service ?: $service = new InMemoryBalanceRepository();
     }
 
+    public function balanceAggregateRepository(): BalanceAggregateRepository
+    {
+        static $service;
+
+        return $service ?: $service = new BalanceAggregateRepository($this->eventDispatcher());
+    }
+
     private function balanceSubscriber(): BalanceSubscriber
     {
         static $service;
 
         return $service ?: $service = new BalanceSubscriber($this->balanceRepository());
+    }
+
+    private function yoloSubscriber(): YoloSubscriber
+    {
+        static $service;
+
+        return $service ?: $service = new YoloSubscriber($this->balanceAggregateRepository());
     }
 
     private function eventDispatcher(): EventDispatcher
@@ -108,6 +123,8 @@ final class ServiceContainer
             $service->registerSubscriber(ProductCreated::class, [$this->balanceSubscriber(), 'onProductCreated']);
             $service->registerSubscriber(GoodsReceived::class, [$this->balanceSubscriber(), 'onGoodsReceived']);
             $service->registerSubscriber(GoodsDelivered::class, [$this->balanceSubscriber(), 'onGoodsDelivered']);
+            $service->registerSubscriber(ProductCreated::class, [$this->yoloSubscriber(), 'onProductCreated']);
+            $service->registerSubscriber(GoodsReceived::class, [$this->yoloSubscriber(), 'onGoodsReceived']);
         }
 
         return $service;

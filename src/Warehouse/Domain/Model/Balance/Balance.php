@@ -34,7 +34,7 @@ class Balance extends Aggregate
 
     public function id(): AggregateId
     {
-        // TODO: Implement id() method.
+        return $this->productId;
     }
 
     public function makeReservation(SalesOrderId $salesOrderId, int $quantity): void
@@ -55,5 +55,10 @@ class Balance extends Aggregate
             unset($this->reservations[(string)$salesOrderId]);
             $this->recordThat(new ReservationCancelled($salesOrderId, $this->productId));
         }
+    }
+
+    public function increase($quantity): void
+    {
+        $this->quantityInStock += $quantity;
     }
 }
