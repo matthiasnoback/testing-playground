@@ -26,9 +26,53 @@ final class SalesOrderTest extends TestCase
 
         self::assertEquals($salesOrderId, $salesOrder->id());
         self::assertCount(2, $salesOrder->lines());
-        self::assertEquals($line1ProductId, $salesOrder->lines()[0]->productId());
-        self::assertEquals($line1Quantity, $salesOrder->lines()[0]->quantity());
-        self::assertEquals($line2ProductId, $salesOrder->lines()[1]->productId());
-        self::assertEquals($line2Quantity, $salesOrder->lines()[1]->quantity());
+        self::assertEquals($line1ProductId, $salesOrder->lines()[(string)$line1ProductId]->productId());
+        self::assertEquals($line1Quantity, $salesOrder->lines()[(string)$line1ProductId]->quantity());
+        self::assertEquals($line2ProductId, $salesOrder->lines()[(string)$line2ProductId]->productId());
+        self::assertEquals($line2Quantity, $salesOrder->lines()[(string)$line2ProductId]->quantity());
+        self::assertFalse($salesOrder->isDeliverable());
+    }
+
+    /**
+     * @test
+     */
+    public function it_is_deliverable_if_every_line_is_deliverable()
+    {
+        $salesOrderId = SalesOrderId::fromString('5d4c7aa6-ed8c-4201-b880-3995b030af39');
+        $salesOrder = SalesOrder::create($salesOrderId);
+
+        $line1ProductId = ProductId::fromString('a9cc4419-a382-4ca5-861f-c5bfc34c6880');
+        $line1Quantity = 10;
+        $salesOrder->addLine($line1ProductId, $line1Quantity);
+
+        $line2ProductId = ProductId::fromString('5b40609f-5e4b-43fa-9c14-f9f59a056d2f');
+        $line2Quantity = 5;
+        $salesOrder->addLine($line2ProductId, $line2Quantity);
+
+        $salesOrder->markLineAsDeliverable($line1ProductId);
+        $salesOrder->markLineAsDeliverable($line2ProductId);
+
+        self::assertTrue($salesOrder->isDeliverable());
+    }
+
+    /**
+     * @test
+     */
+    public function it_is_not_deliverable_if_a_line_is_not_deliverable()
+    {
+        $salesOrderId = SalesOrderId::fromString('5d4c7aa6-ed8c-4201-b880-3995b030af39');
+        $salesOrder = SalesOrder::create($salesOrderId);
+
+        $line1ProductId = ProductId::fromString('a9cc4419-a382-4ca5-861f-c5bfc34c6880');
+        $line1Quantity = 10;
+        $salesOrder->addLine($line1ProductId, $line1Quantity);
+
+        $line2ProductId = ProductId::fromString('5b40609f-5e4b-43fa-9c14-f9f59a056d2f');
+        $line2Quantity = 5;
+        $salesOrder->addLine($line2ProductId, $line2Quantity);
+
+        $salesOrder->markLineAsDeliverable($line2ProductId);
+
+        self::assertFalse($salesOrder->isDeliverable());
     }
 }

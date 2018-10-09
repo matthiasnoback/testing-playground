@@ -117,4 +117,12 @@ final class FeatureContext implements Context
             assertEquals('There is not enough stock for this product', $e->getMessage());
         }
     }
+
+    /**
+     * @Then this sales order should be deliverable
+     */
+    public function thisSalesOrderShouldBeDeliverable()
+    {
+        assertTrue($this->salesOrder->isDeliverable());
+    }
 }

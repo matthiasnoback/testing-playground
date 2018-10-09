@@ -17,6 +17,9 @@ final class SalesOrderLine
      */
     private $quantity;
 
+    /** @var bool */
+    private $isDeliverable = false;
+
     public function __construct(ProductId $productId, int $quantity)
     {
         $this->productId = $productId;
@@ -31,5 +34,15 @@ final class SalesOrderLine
     public function quantity(): int
     {
         return $this->quantity;
+    }
+
+    public function isDeliverable(): bool
+    {
+        return $this->isDeliverable;
+    }
+
+    public function markAsDeliverable(): void
+    {
+        $this->isDeliverable = true;
     }
 }
