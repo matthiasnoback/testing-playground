@@ -93,4 +93,12 @@ final class SalesOrder extends Aggregate
             $this->lines[(string) $productId]->markAsDeliverable();
         }
     }
+
+    public function cancel(): void
+    {
+        foreach ($this->lines as $line) {
+            $this->recordThat(new SalesOrderLineCancelled($this->salesOrderId, $line->productId()));
+        }
+
+    }
 }

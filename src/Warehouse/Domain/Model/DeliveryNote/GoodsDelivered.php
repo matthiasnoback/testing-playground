@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Warehouse\Domain\Model\DeliveryNote;
 use Warehouse\Domain\Model\Product\ProductId;
+use Warehouse\Domain\Model\SalesOrder\SalesOrderId;
 
 /**
  * @author Julian Prud'homme <julian.prudhomme@akeneo.com>
@@ -23,10 +24,14 @@ class GoodsDelivered
     private $productId;
     private $quantity;
 
-    public function __construct(ProductId $productId, $quantity)
+    /** @var SalesOrderId */
+    private $salesOrderId;
+
+    public function __construct(ProductId $productId,SalesOrderId $salesOrderId, $quantity)
     {
         $this->productId = $productId;
         $this->quantity = $quantity;
+        $this->salesOrderId = $salesOrderId;
     }
 
     /**
@@ -43,5 +48,10 @@ class GoodsDelivered
     public function getProductId(): ProductId
     {
         return $this->productId;
+    }
+
+    public function getSalesOrderId(): SalesOrderId
+    {
+        return $this->salesOrderId;
     }
 }

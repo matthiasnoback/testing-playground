@@ -119,4 +119,12 @@ final class FeatureContext implements Context
     {
         assertTrue($this->salesOrder->isDeliverable());
     }
+
+    /**
+     * @When I cancel it
+     */
+    public function iCancelIt()
+    {
+        $this->serviceContainer->cancelOrderService()->cancel((string) $this->salesOrder->salesOrderId());
+    }
 }

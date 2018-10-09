@@ -7,6 +7,7 @@ use Common\EventDispatcher\EventDispatcher;
 use Warehouse\Application\Balance;
 use Warehouse\Application\BalanceRepository;
 use Warehouse\Application\BalanceSubscriber;
+use Warehouse\Application\CancelOrderService;
 use Warehouse\Application\CreateProductService;
 use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
@@ -28,6 +29,11 @@ final class ServiceContainer
     public function createProductService(): CreateProductService
     {
         return new CreateProductService($this->productRepository());
+    }
+
+    public function cancelOrderService(): CancelOrderService
+    {
+        return new CancelOrderService($this->salesOrderRepository());
     }
 
     public function placePurchaseOrderService(): PlacePurchaseOrderService
@@ -131,6 +137,7 @@ final class ServiceContainer
             $service->registerSubscriber(GoodsReceived::class, [$this->yoloSubscriber(), 'onGoodsReceived']);
             $service->registerSubscriber(ReservationAccepted::class, [$this->yoloSubscriber(), 'onReservationAccepted']);
             $service->registerSubscriber(SalesOrderLineAdded::class, [$this->yoloSubscriber(), 'onSalesOrderLineAdded']);
+            $service->registerSubscriber(GoodsDelivered::class, [$this->yoloSubscriber(), 'onGoodsDelivered']);
         }
 
         return $service;

@@ -50,7 +50,7 @@ class DeliveryNote extends Aggregate
     {
         $this->lines[] = new DeliveryNoteLine($productId, $quantity);
 
-        $this->recordThat(new GoodsDelivered($productId, $quantity));
+        $this->recordThat(new GoodsDelivered($productId, $this->salesOrderId, $quantity));
     }
 
     public function id(): AggregateId

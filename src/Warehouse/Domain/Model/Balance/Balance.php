@@ -57,6 +57,13 @@ class Balance extends Aggregate
         }
     }
 
+    public function commitReservation(SalesOrderId $salesOrderId): void
+    {
+        if (array_key_exists((string) $salesOrderId, $this->reservations)) {
+            unset($this->reservations[(string)$salesOrderId]);
+        }
+    }
+
     public function increase($quantity): void
     {
         $this->quantityInStock += $quantity;

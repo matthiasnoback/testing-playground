@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Warehouse\Application;
 
 use Warehouse\Domain\Model\Balance\ReservationAccepted;
+use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
 use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Balance\BalanceRepository;
 use Warehouse\Domain\Model\Balance\Balance;
@@ -63,6 +64,14 @@ class YoloSubscriber
     {
         $balance = $this->balanceRepository->getByProductId($lineAdded->getProductId());
         $balance->makeReservation($lineAdded->getSalesOrderId(), $lineAdded->getQuantity());
+
+        $this->balanceRepository->save($balance);
+    }
+
+    public function onGoodsDelivered(GoodsDelivered $goodsDelivered): void
+    {
+        $balance = $this->balanceRepository->getByProductId($goodsDelivered->getProductId());
+        $balance->commitReservation($goodsDelivered->getSalesOrderId());
 
         $this->balanceRepository->save($balance);
     }
