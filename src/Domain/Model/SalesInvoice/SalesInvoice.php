@@ -37,7 +37,7 @@ final class SalesInvoice
     public function addLine(
         string $description,
         float $quantity,
-        float $tariff,
+        Money $tariff,
         Discount $discount,
         VatRate $vatRate
     ): void {

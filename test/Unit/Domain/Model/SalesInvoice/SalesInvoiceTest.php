@@ -12,18 +12,19 @@ final class SalesInvoiceTest extends TestCase
      */
     public function it_calculates_the_correct_totals_for_an_invoice_in_foreign_currency(): void
     {
-        $salesInvoice = new SalesInvoice(new Currency('USD'), 1.3, 3);
+        $currency = new Currency('USD');
+        $salesInvoice = new SalesInvoice($currency, 1.3, 3);
         $salesInvoice->addLine(
             'Product with a 10% discount and standard VAT applied',
             2.0,
-            15.0,
+            new Money(1500, $currency),
             Discount::fromPercentage(10.0),
             new VatRate('S', 21.0)
         );
         $salesInvoice->addLine(
             'Product with no discount and low VAT applied',
             3.123456,
-            12.50,
+            new Money(1250, $currency),
             Discount::none(),
             new VatRate('L', 9.0)
         );
@@ -62,18 +63,19 @@ final class SalesInvoiceTest extends TestCase
      */
     public function it_calculates_the_correct_totals_for_an_invoice_in_ledger_currency(): void
     {
-        $salesInvoice = new SalesInvoice(new Currency('EUR'), 1, 3);
+        $currency = new Currency('EUR');
+        $salesInvoice = new SalesInvoice($currency, 1, 3);
         $salesInvoice->addLine(
             'Product with a 10% discount and standard VAT applied',
             2.0,
-            15.0,
+            new Money(1500, $currency),
             Discount::fromPercentage(10.0),
             new VatRate('S', 21.0)
         );
         $salesInvoice->addLine(
             'Product with no discount and low VAT applied',
             3.123456,
-            12.50,
+            new Money(1250, $currency),
             Discount::none(),
             new VatRate('L', 9.0)
         );

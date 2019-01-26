@@ -17,4 +17,9 @@ final class Currency
         Assertion::inArray($currency, ['USD', 'EUR']);
         $this->currency = $currency;
     }
+
+    public function decimalPrecision(): int
+    {
+        return 2;
+    }
 }

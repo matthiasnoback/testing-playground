@@ -52,7 +52,7 @@ final class Line
         string $description,
         float $quantity,
         int $quantityPrecision,
-        float $tariff,
+        Money $tariff,
         Currency $currency,
         Discount $discount,
         VatRate $vatRate,
@@ -68,19 +68,19 @@ final class Line
         $this->exchangeRate = $exchangeRate;
     }
 
-    public function amount(): float
+    public function amount(): Money
     {
-        return round(round($this->quantity, $this->quantityPrecision) * $this->tariff, 2);
+        return $this->tariff->multiply(round($this->quantity, $this->quantityPrecision));
     }
 
     public function discountAmount(): float
     {
-        return $this->discount->discountAmountFor($this->amount());
+        return $this->discount->discountAmountFor($this->amount()->asFloat());
     }
 
     public function netAmount(): float
     {
-        return round($this->amount() - $this->discountAmount(), 2);
+        return round($this->amount()->asFloat() - $this->discountAmount(), 2);
     }
 
     public function vatAmount(): float
