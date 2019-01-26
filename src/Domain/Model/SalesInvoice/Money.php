@@ -29,6 +29,14 @@ final class Money
         );
     }
 
+    public function subtract(Money $other): Money
+    {
+        return new Money(
+            $this->amount - $other->amount,
+            $this->currency
+        );
+    }
+
     public function asFloat(): float
     {
         return round(

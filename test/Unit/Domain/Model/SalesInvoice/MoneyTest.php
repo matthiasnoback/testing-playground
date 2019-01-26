@@ -22,4 +22,17 @@ final class MoneyTest extends TestCase
         // the result would be 261.1782, but is rounded up to 261
         self::assertEquals(new Money(261, $currency), $originalAmount->multiply(2.1234));
     }
+
+    /**
+     * @test
+     */
+    public function you_can_subtract_two_money_amounts(): void
+    {
+        $currency = new Currency('EUR');
+        $originalAmount = new Money(123, $currency);
+
+        self::assertEquals(new Money(0, $currency), $originalAmount->subtract(new Money(123, $currency)));
+
+        self::assertEquals(new Money(-123, $currency), $originalAmount->subtract(new Money(246, $currency)));
+    }
 }

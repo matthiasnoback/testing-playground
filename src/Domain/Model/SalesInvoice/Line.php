@@ -73,19 +73,19 @@ final class Line
         return $this->tariff->multiply(round($this->quantity, $this->quantityPrecision));
     }
 
-    public function discountAmount(): float
+    public function discountAmount(): Money
     {
-        return $this->discount->discountAmountFor($this->amount()->asFloat());
+        return $this->discount->discountAmountFor($this->amount());
     }
 
-    public function netAmount(): float
+    public function netAmount(): Money
     {
-        return round($this->amount()->asFloat() - $this->discountAmount(), 2);
+        return $this->amount()->subtract($this->discountAmount());
     }
 
     public function vatAmount(): float
     {
-        return $this->vatRate->applyTo($this->netAmount());
+        return $this->vatRate->applyTo($this->netAmount()->asFloat());
     }
 
     public function netAmountInLedgerCurrency(): float

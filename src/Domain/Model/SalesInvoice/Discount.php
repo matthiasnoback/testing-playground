@@ -27,8 +27,8 @@ final class Discount
         return self::fromPercentage(0.0);
     }
 
-    public function discountAmountFor(float $amount): float
+    public function discountAmountFor(Money $amount): Money
     {
-        return round($amount * ($this->percentage / 100), 2);
+        return $amount->multiply(($this->percentage / 100));
     }
 }
