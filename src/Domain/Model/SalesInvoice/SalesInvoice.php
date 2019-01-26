@@ -13,7 +13,7 @@ final class SalesInvoice
     private $currency;
 
     /**
-     * @var float|null
+     * @var ExchangeRate
      */
     private $exchangeRate;
 
@@ -27,7 +27,7 @@ final class SalesInvoice
      */
     private $lines = [];
 
-    public function __construct(Currency $currency, ?float $exchangeRate, int $quantityPrecision)
+    public function __construct(Currency $currency, ExchangeRate $exchangeRate, int $quantityPrecision)
     {
         $this->currency = $currency;
         $this->exchangeRate = $exchangeRate;
@@ -53,6 +53,11 @@ final class SalesInvoice
         );
     }
 
+    public function totalNetAmountInLedgerCurrency(): Money
+    {
+        return $this->totalNetAmount()->convert($this->exchangeRate);
+    }
+
     public function totalNetAmount(): Money
     {
         $sum = new Money(0, $this->currency);
@@ -62,15 +67,6 @@ final class SalesInvoice
         }
 
         return $sum;
-    }
-
-    public function totalNetAmountInLedgerCurrency(): float
-    {
-        if ($this->currency === 'EUR' || $this->exchangeRate == null) {
-            return $this->totalNetAmount();
-        }
-
-        return round($this->totalNetAmount()->asFloat() / $this->exchangeRate, 2);
     }
 
     public function totalVatAmount(): Money
@@ -84,12 +80,8 @@ final class SalesInvoice
         return $sum;
     }
 
-    public function totalVatAmountInLedgerCurrency(): float
+    public function totalVatAmountInLedgerCurrency(): Money
     {
-        if ($this->currency === 'EUR' || $this->exchangeRate == null) {
-            return $this->totalVatAmount();
-        }
-
-        return round($this->totalVatAmount()->asFloat() / $this->exchangeRate, 2);
+        return $this->totalVatAmount()->convert($this->exchangeRate);
     }
 }

@@ -13,7 +13,7 @@ final class SalesInvoiceTest extends TestCase
     public function it_calculates_the_correct_totals_for_an_invoice_in_foreign_currency(): void
     {
         $currency = new Currency('USD');
-        $salesInvoice = new SalesInvoice($currency, 1.3, 3);
+        $salesInvoice = new SalesInvoice($currency, new ExchangeRate($currency, new Currency('EUR'), 1.3), 3);
         $salesInvoice->addLine(
             'Product with a 10% discount and standard VAT applied',
             2.0,
@@ -44,7 +44,10 @@ final class SalesInvoiceTest extends TestCase
         /*
          * 66.04 / 1.3 = 50.80
          */
-        self::assertEquals(50.80, $salesInvoice->totalNetAmountInLedgerCurrency());
+        self::assertEquals(
+            new Money(5080, new Currency('EUR')),
+            $salesInvoice->totalNetAmountInLedgerCurrency()
+        );
 
         /*
          * 27.00 * 21% = 5.67
@@ -61,7 +64,10 @@ final class SalesInvoiceTest extends TestCase
         /*
          * 9.18 / 1.3 = 7.06
          */
-        self::assertEquals(7.06, $salesInvoice->totalVatAmountInLedgerCurrency());
+        self::assertEquals(
+            new Money(706, new Currency('EUR')),
+            $salesInvoice->totalVatAmountInLedgerCurrency()
+        );
     }
 
     /**
@@ -70,7 +76,7 @@ final class SalesInvoiceTest extends TestCase
     public function it_calculates_the_correct_totals_for_an_invoice_in_ledger_currency(): void
     {
         $currency = new Currency('EUR');
-        $salesInvoice = new SalesInvoice($currency, 1, 3);
+        $salesInvoice = new SalesInvoice($currency, ExchangeRate::noExchangeRate($currency), 3);
         $salesInvoice->addLine(
             'Product with a 10% discount and standard VAT applied',
             2.0,
@@ -86,7 +92,7 @@ final class SalesInvoiceTest extends TestCase
             new VatRate('L', 9.0)
         );
 
-        self::assertEquals($salesInvoice->totalNetAmount()->asFloat(), $salesInvoice->totalNetAmountInLedgerCurrency());
-        self::assertEquals($salesInvoice->totalVatAmount()->asFloat(), $salesInvoice->totalVatAmountInLedgerCurrency());
+        self::assertEquals($salesInvoice->totalNetAmount(), $salesInvoice->totalNetAmountInLedgerCurrency());
+        self::assertEquals($salesInvoice->totalVatAmount(), $salesInvoice->totalVatAmountInLedgerCurrency());
     }
 }

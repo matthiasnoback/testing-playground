@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Domain\Model\SalesInvoice;
 
+use Assert\Assertion;
+
 final class Money
 {
     /**
@@ -42,6 +44,16 @@ final class Money
         return new Money(
             $this->amount + $other->amount,
             $this->currency
+        );
+    }
+
+    public function convert(ExchangeRate $exchangeRate): Money
+    {
+        Assertion::eq($exchangeRate->from(), $this->currency);
+
+        return new Money(
+            (int)round($this->amount / $exchangeRate->rate()),
+            $exchangeRate->to()
         );
     }
 

@@ -44,7 +44,7 @@ final class Line
     private $vatRate;
 
     /**
-     * @var float|null
+     * @var ExchangeRate
      */
     private $exchangeRate;
 
@@ -56,7 +56,7 @@ final class Line
         Currency $currency,
         Discount $discount,
         VatRate $vatRate,
-        ?float $exchangeRate
+        ExchangeRate $exchangeRate
     ) {
         $this->description = $description;
         $this->quantity = $quantity;
@@ -88,21 +88,13 @@ final class Line
         return $this->vatRate->applyTo($this->netAmount());
     }
 
-    public function netAmountInLedgerCurrency(): float
+    public function netAmountInLedgerCurrency(): Money
     {
-        if ($this->currency == new Currency('EUR') || $this->exchangeRate === null) {
-            return $this->netAmount();
-        }
-
-        return round($this->netAmount() / $this->exchangeRate, 2);
+        return $this->netAmount()->convert($this->exchangeRate);
     }
 
     public function vatAmountInLedgerCurrency(): float
     {
-        if ($this->currency == new Currency('EUR') || $this->exchangeRate === null) {
-            return $this->vatAmount();
-        }
-
-        return round($this->vatAmount() / $this->exchangeRate, 2);
+        return $this->vatAmount()->convert($this->exchangeRate);
     }
 }
