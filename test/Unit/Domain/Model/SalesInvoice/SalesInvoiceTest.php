@@ -18,14 +18,14 @@ final class SalesInvoiceTest extends TestCase
             2.0,
             15.0,
             Discount::fromPercentage(10.0),
-            'S'
+            new VatRate('S', 21.0)
         );
         $salesInvoice->addLine(
             'Product with no discount and low VAT applied',
             3.123456,
             12.50,
             Discount::none(),
-            'L'
+            new VatRate('L', 9.0)
         );
 
         /*
@@ -68,58 +68,17 @@ final class SalesInvoiceTest extends TestCase
             2.0,
             15.0,
             Discount::fromPercentage(10.0),
-            'S'
+            new VatRate('S', 21.0)
         );
         $salesInvoice->addLine(
             'Product with no discount and low VAT applied',
             3.123456,
             12.50,
             Discount::none(),
-            'L'
+            new VatRate('L', 9.0)
         );
 
         self::assertEquals($salesInvoice->totalNetAmount(), $salesInvoice->totalNetAmountInLedgerCurrency());
         self::assertEquals($salesInvoice->totalVatAmount(), $salesInvoice->totalVatAmountInLedgerCurrency());
-    }
-
-    /**
-     * @test
-     */
-    public function it_fails_when_you_provide_an_unknown_vat_code(): void
-    {
-        $salesInvoice = $this->createSalesInvoice();
-
-        $this->expectException(InvalidArgumentException::class);
-
-        $salesInvoice->addLine(
-            $this->someDescription(),
-            $this->someQuantity(),
-            $this->someTariff(),
-            Discount::none(),
-            'Invalid VAT code'
-        );
-    }
-
-    /**
-     * @return SalesInvoice
-     */
-    private function createSalesInvoice(): SalesInvoice
-    {
-        return new SalesInvoice('EUR', 1, 3);
-    }
-
-    private function someDescription(): string
-    {
-        return 'Description';
-    }
-
-    private function someQuantity(): float
-    {
-        return 2.0;
-    }
-
-    private function someTariff(): float
-    {
-        return 15.0;
     }
 }

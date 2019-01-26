@@ -39,9 +39,9 @@ final class Line
     private $discount;
 
     /**
-     * @var string
+     * @var VatRate
      */
-    private $vatCode;
+    private $vatRate;
 
     /**
      * @var float|null
@@ -55,7 +55,7 @@ final class Line
         float $tariff,
         string $currency,
         Discount $discount,
-        string $vatCode,
+        VatRate $vatRate,
         ?float $exchangeRate
     ) {
         $this->description = $description;
@@ -64,7 +64,7 @@ final class Line
         $this->tariff = $tariff;
         $this->currency = $currency;
         $this->discount = $discount;
-        $this->vatCode = $vatCode;
+        $this->vatRate = $vatRate;
         $this->exchangeRate = $exchangeRate;
     }
 
@@ -85,19 +85,7 @@ final class Line
 
     public function vatAmount(): float
     {
-        if ($this->vatCode === 'S') {
-            $vatRate = 21.0;
-        } elseif ($this->vatCode === 'L') {
-            if (new DateTime('now') < DateTime::createFromFormat('Y-m-d', '2019-01-01')) {
-                $vatRate = 6.0;
-            } else {
-                $vatRate = 9.0;
-            }
-        } else {
-            throw new InvalidArgumentException('Should not happen');
-        }
-
-        return round($this->netAmount() * $vatRate / 100, 2);
+        return $this->vatRate->applyTo($this->netAmount());
     }
 
     public function netAmountInLedgerCurrency(): float

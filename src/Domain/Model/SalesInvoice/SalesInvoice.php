@@ -39,10 +39,8 @@ final class SalesInvoice
         float $quantity,
         float $tariff,
         Discount $discount,
-        string $vatCode
+        VatRate $vatRate
     ): void {
-        Assertion::inArray($vatCode, ['S', 'L']);
-
         $this->lines[] = new Line(
             $description,
             $quantity,
@@ -50,7 +48,7 @@ final class SalesInvoice
             $tariff,
             $this->currency,
             $discount,
-            $vatCode,
+            $vatRate,
             $this->exchangeRate
         );
     }
