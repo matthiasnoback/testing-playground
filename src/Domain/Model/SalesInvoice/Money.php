@@ -37,6 +37,14 @@ final class Money
         );
     }
 
+    public function add(Money $other): Money
+    {
+        return new Money(
+            $this->amount + $other->amount,
+            $this->currency
+        );
+    }
+
     public function asFloat(): float
     {
         return round(

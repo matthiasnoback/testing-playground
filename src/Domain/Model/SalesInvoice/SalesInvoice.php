@@ -53,15 +53,15 @@ final class SalesInvoice
         );
     }
 
-    public function totalNetAmount(): float
+    public function totalNetAmount(): Money
     {
-        $sum = 0.0;
+        $sum = new Money(0, $this->currency);
 
         foreach ($this->lines as $line) {
-            $sum += $line->netAmount()->asFloat();
+            $sum = $sum->add($line->netAmount());
         }
 
-        return round($sum, 2);
+        return $sum;
     }
 
     public function totalNetAmountInLedgerCurrency(): float
@@ -70,7 +70,7 @@ final class SalesInvoice
             return $this->totalNetAmount();
         }
 
-        return round($this->totalNetAmount() / $this->exchangeRate, 2);
+        return round($this->totalNetAmount()->asFloat() / $this->exchangeRate, 2);
     }
 
     public function totalVatAmount(): float
