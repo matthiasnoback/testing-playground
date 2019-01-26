@@ -21,8 +21,8 @@ final class VatRate
         $this->ratePercentage = $ratePercentage;
     }
 
-    public function applyTo(float $amount): float
+    public function applyTo(Money $amount): Money
     {
-        return round($amount * $this->ratePercentage / 100, 2);
+        return $amount->multiply($this->ratePercentage / 100);
     }
 }

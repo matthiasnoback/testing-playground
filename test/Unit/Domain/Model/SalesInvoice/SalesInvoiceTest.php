@@ -53,7 +53,10 @@ final class SalesInvoiceTest extends TestCase
          * =
          * 9.18
          */
-        self::assertEquals(9.18, $salesInvoice->totalVatAmount());
+        self::assertEquals(
+            new Money(918, $currency),
+            $salesInvoice->totalVatAmount()
+        );
 
         /*
          * 9.18 / 1.3 = 7.06
@@ -84,6 +87,6 @@ final class SalesInvoiceTest extends TestCase
         );
 
         self::assertEquals($salesInvoice->totalNetAmount()->asFloat(), $salesInvoice->totalNetAmountInLedgerCurrency());
-        self::assertEquals($salesInvoice->totalVatAmount(), $salesInvoice->totalVatAmountInLedgerCurrency());
+        self::assertEquals($salesInvoice->totalVatAmount()->asFloat(), $salesInvoice->totalVatAmountInLedgerCurrency());
     }
 }

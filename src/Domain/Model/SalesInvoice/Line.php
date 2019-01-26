@@ -83,9 +83,9 @@ final class Line
         return $this->amount()->subtract($this->discountAmount());
     }
 
-    public function vatAmount(): float
+    public function vatAmount(): Money
     {
-        return $this->vatRate->applyTo($this->netAmount()->asFloat());
+        return $this->vatRate->applyTo($this->netAmount());
     }
 
     public function netAmountInLedgerCurrency(): float

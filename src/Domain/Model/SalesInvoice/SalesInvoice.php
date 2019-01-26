@@ -73,15 +73,15 @@ final class SalesInvoice
         return round($this->totalNetAmount()->asFloat() / $this->exchangeRate, 2);
     }
 
-    public function totalVatAmount(): float
+    public function totalVatAmount(): Money
     {
-        $sum = 0.0;
+        $sum = new Money(0, $this->currency);
 
         foreach ($this->lines as $line) {
-            $sum += $line->vatAmount();
+            $sum = $sum->add($line->vatAmount());
         }
 
-        return round($sum, 2);
+        return $sum;
     }
 
     public function totalVatAmountInLedgerCurrency(): float
@@ -90,6 +90,6 @@ final class SalesInvoice
             return $this->totalVatAmount();
         }
 
-        return round($this->totalVatAmount() / $this->exchangeRate, 2);
+        return round($this->totalVatAmount()->asFloat() / $this->exchangeRate, 2);
     }
 }
