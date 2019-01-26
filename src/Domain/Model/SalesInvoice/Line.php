@@ -34,7 +34,7 @@ final class Line
     private $currency;
 
     /**
-     * @var float|null
+     * @var Discount
      */
     private $discount;
 
@@ -54,7 +54,7 @@ final class Line
         int $quantityPrecision,
         float $tariff,
         string $currency,
-        ?float $discount,
+        Discount $discount,
         string $vatCode,
         ?float $exchangeRate
     ) {
@@ -75,11 +75,7 @@ final class Line
 
     public function discountAmount(): float
     {
-        if ($this->discount === null) {
-            return 0.0;
-        }
-
-        return round($this->amount() * $this->discount / 100, 2);
+        return $this->discount->discountAmountFor($this->amount());
     }
 
     public function netAmount(): float

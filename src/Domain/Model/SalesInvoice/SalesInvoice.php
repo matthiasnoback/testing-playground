@@ -38,7 +38,7 @@ final class SalesInvoice
         string $description,
         float $quantity,
         float $tariff,
-        ?float $discount,
+        Discount $discount,
         string $vatCode
     ): void {
         Assertion::inArray($vatCode, ['S', 'L']);
