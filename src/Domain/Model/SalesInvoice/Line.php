@@ -29,7 +29,7 @@ final class Line
     private $tariff;
 
     /**
-     * @var string
+     * @var Currency
      */
     private $currency;
 
@@ -53,7 +53,7 @@ final class Line
         float $quantity,
         int $quantityPrecision,
         float $tariff,
-        string $currency,
+        Currency $currency,
         Discount $discount,
         VatRate $vatRate,
         ?float $exchangeRate
@@ -90,7 +90,7 @@ final class Line
 
     public function netAmountInLedgerCurrency(): float
     {
-        if ($this->currency === 'EUR' || $this->exchangeRate === null) {
+        if ($this->currency == new Currency('EUR') || $this->exchangeRate === null) {
             return $this->netAmount();
         }
 
@@ -99,7 +99,7 @@ final class Line
 
     public function vatAmountInLedgerCurrency(): float
     {
-        if ($this->currency === 'EUR' || $this->exchangeRate === null) {
+        if ($this->currency == new Currency('EUR') || $this->exchangeRate === null) {
             return $this->vatAmount();
         }
 

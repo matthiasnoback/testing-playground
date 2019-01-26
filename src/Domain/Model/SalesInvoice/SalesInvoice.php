@@ -8,7 +8,7 @@ use Assert\Assertion;
 final class SalesInvoice
 {
     /**
-     * @var string
+     * @var Currency
      */
     private $currency;
 
@@ -27,7 +27,7 @@ final class SalesInvoice
      */
     private $lines = [];
 
-    public function __construct(string $currency, ?float $exchangeRate, int $quantityPrecision)
+    public function __construct(Currency $currency, ?float $exchangeRate, int $quantityPrecision)
     {
         $this->currency = $currency;
         $this->exchangeRate = $exchangeRate;
