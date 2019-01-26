@@ -17,6 +17,7 @@ final class VatRate
 
     public function __construct(string $code, float $ratePercentage)
     {
+        // A float isn't ideal here; I'd rather use a generic "quantity-with-precision" value object here
         $this->code = $code;
         $this->ratePercentage = $ratePercentage;
     }

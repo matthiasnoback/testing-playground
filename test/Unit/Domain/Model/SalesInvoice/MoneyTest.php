@@ -35,4 +35,14 @@ final class MoneyTest extends TestCase
 
         self::assertEquals(new Money(-123, $currency), $originalAmount->subtract(new Money(246, $currency)));
     }
+
+    /**
+     * @test
+     */
+    public function it_can_represent_itself_as_a_string_with_a_decimal_point()
+    {
+        $amount = new Money(123, new Currency('EUR'));
+
+        self::assertEquals('1.23', $amount->asString());
+    }
 }

@@ -29,8 +29,10 @@ final class SalesInvoice
 
     public function __construct(Currency $currency, ExchangeRate $exchangeRate, int $quantityPrecision)
     {
+        // We could get rid of $currency here, because it's enclosed in the ExchangeRate value object
         $this->currency = $currency;
         $this->exchangeRate = $exchangeRate;
+        // We should get rid of quantity precision, and instead use a generic quantity-with-precision value object
         $this->quantityPrecision = $quantityPrecision;
     }
 
@@ -60,6 +62,9 @@ final class SalesInvoice
 
     public function totalNetAmount(): Money
     {
+        // We could have a sum function on Money, but then we would need to provide it with all the Money objects,
+        // which would require the use of array_map or something like that. I decided to keep it simple like this.
+
         $sum = new Money(0, $this->currency);
 
         foreach ($this->lines as $line) {
@@ -82,6 +87,9 @@ final class SalesInvoice
 
     public function totalVatAmountInLedgerCurrency(): Money
     {
+        // Something that's not really clear anymore is - what is "ledger currency"?
+        // Still, this is an improvement, because we use a "Null object"-like pattern so we can always convert.
+
         return $this->totalVatAmount()->convert($this->exchangeRate);
     }
 }

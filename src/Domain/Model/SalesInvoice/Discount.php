@@ -24,6 +24,7 @@ final class Discount
 
     public static function none(): Discount
     {
+        // Previously the "null" case. No discount, is the same as 0% discount.
         return self::fromPercentage(0.0);
     }
 

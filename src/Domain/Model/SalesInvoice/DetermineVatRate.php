@@ -5,6 +5,7 @@ namespace Domain\Model\SalesInvoice;
 
 use DateTime;
 
+// This could be a service you can use to determine the VAT code and rate
 final class DetermineVatRate
 {
     public function lowRateForDate(DateTime $date)

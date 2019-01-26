@@ -49,6 +49,9 @@ final class Money
 
     public function convert(ExchangeRate $exchangeRate): Money
     {
+        // Up for discussion: should we move convert() to ExchangeRate? It would force Amount to give up some of its
+        // externals. Do you have a better solution?
+
         Assertion::eq($exchangeRate->from(), $this->currency);
 
         return new Money(
@@ -63,5 +66,10 @@ final class Money
             $this->amount / (10 ** $this->currency->decimalPrecision()),
             $this->currency->decimalPrecision()
         );
+    }
+
+    public function asString(): string
+    {
+        return number_format($this->asFloat(), $this->currency->decimalPrecision());
     }
 }
