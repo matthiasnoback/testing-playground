@@ -24,7 +24,7 @@ final class Line
     private $quantityPrecision;
 
     /**
-     * @var float
+     * @var Money
      */
     private $tariff;
 
@@ -93,7 +93,7 @@ final class Line
         return $this->netAmount()->convert($this->exchangeRate);
     }
 
-    public function vatAmountInLedgerCurrency(): float
+    public function vatAmountInLedgerCurrency(): Money
     {
         return $this->vatAmount()->convert($this->exchangeRate);
     }
