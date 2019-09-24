@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Warehouse\Application;
 
 use Warehouse\Domain\Model\Product\Product;
+use Warehouse\Domain\Model\Product\ProductId;
 use Warehouse\Domain\Model\Product\ProductRepository;
 
 final class CreateProductService
@@ -18,15 +19,17 @@ final class CreateProductService
         $this->productRepository = $productRepository;
     }
 
-    public function create($description): Product
+    public function create($description): ProductId
     {
+        $productId = $this->productRepository->nextIdentity();
+
         $product = Product::create(
-            $this->productRepository->nextIdentity(),
+            $productId,
             $description
         );
 
         $this->productRepository->save($product);
 
-        return $product;
+        return $productId;
     }
 }

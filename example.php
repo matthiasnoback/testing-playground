@@ -7,15 +7,27 @@ require __DIR__ . '/bootstrap.php';
 
 $serviceContainer = new ServiceContainer();
 
-$product = $serviceContainer->createProductService()->create('Mars Rover');
-dump($product);
+$productId = $serviceContainer->createProductService()->create('Mars Rover');
+dump($serviceContainer->productRepository()->getById($productId));
 
-$purchaseOrder = $serviceContainer->placePurchaseOrderService()->place([
-    (string)$product->productId() => 10
+$purchaseOrderId = $serviceContainer->createPurchaseOrderService()->place([
+    (string)$productId => 10
 ]);
-dump($purchaseOrder);
+dump($serviceContainer->purchaseOrderRepository()->getById($purchaseOrderId));
 
-$salesOrder = $serviceContainer->placeSalesOrderService()->place([
-    (string)$product->productId() => 4
+$salesOrderId = $serviceContainer->placeSalesOrderService()->place([
+    (string)$productId => 4
 ]);
-dump($salesOrder);
+dump($serviceContainer->salesOrderRepository()->getById($salesOrderId));
+
+$receiptNoteId = $serviceContainer->receiveGoods()->receive(
+    (string) $purchaseOrderId, [
+        (string) $productId => 10
+    ]
+);
+dump($serviceContainer->receiptNoteRepository()->getById($receiptNoteId));
+
+$deliverNoteId = $serviceContainer->deliverGoodsService()->deliver(
+    (string) $salesOrderId
+);
+dump($deliverNoteId);

@@ -5,6 +5,7 @@ namespace Warehouse\Application;
 
 use Warehouse\Domain\Model\Product\ProductId;
 use Warehouse\Domain\Model\SalesOrder\SalesOrder;
+use Warehouse\Domain\Model\SalesOrder\SalesOrderId;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
 final class PlaceSalesOrderService
@@ -19,10 +20,12 @@ final class PlaceSalesOrderService
         $this->salesOrderRepository = $salesOrderRepository;
     }
 
-    public function place(array $productsAndQuantities): SalesOrder
+    public function place(array $productsAndQuantities): SalesOrderId
     {
+        $salesOrderId = $this->salesOrderRepository->nextIdentity();
+
         $salesOrder = SalesOrder::create(
-            $this->salesOrderRepository->nextIdentity()
+            $salesOrderId
         );
 
         foreach ($productsAndQuantities as $productId => $quantity) {
@@ -33,6 +36,6 @@ final class PlaceSalesOrderService
 
         $this->salesOrderRepository->save($salesOrder);
 
-        return $salesOrder;
+        return $salesOrderId;
     }
 }

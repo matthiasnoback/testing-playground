@@ -8,6 +8,7 @@ use Common\Aggregate;
 use Common\AggregateId;
 use LogicException;
 use Warehouse\Domain\Model\Product\ProductId;
+use function count;
 
 final class SalesOrder extends Aggregate
 {
@@ -53,12 +54,12 @@ final class SalesOrder extends Aggregate
     {
         Assertion::false($this->wasPlaced, 'You cannot add lines to an already placed sales order.');
 
-        $this->lines[] = new SalesOrderLine($productId, $quantity);
+        $this->lines[(string)$productId] = new SalesOrderLine($productId, $quantity);
     }
 
     public function place(): void
     {
-        if (\count($this->lines) === 0) {
+        if (count($this->lines) === 0) {
             throw new LogicException('A sales order should have at least one line');
         }
 

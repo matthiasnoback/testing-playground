@@ -5,9 +5,13 @@ namespace Warehouse\Infrastructure;
 
 use Common\EventDispatcher\EventDispatcher;
 use Warehouse\Application\CreateProductService;
+use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
+use Warehouse\Application\ReceiveGoodsService;
+use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
 use Warehouse\Domain\Model\Product\ProductRepository;
+use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
 final class ServiceContainer
@@ -17,7 +21,7 @@ final class ServiceContainer
         return new CreateProductService($this->productRepository());
     }
 
-    public function placePurchaseOrderService(): PlacePurchaseOrderService
+    public function createPurchaseOrderService(): PlacePurchaseOrderService
     {
         return new PlacePurchaseOrderService($this->purchaseOrderRepository());
     }
@@ -27,25 +31,57 @@ final class ServiceContainer
         return new PlaceSalesOrderService($this->salesOrderRepository());
     }
 
-    private function productRepository(): ProductRepository
+    public function receiveGoods(): ReceiveGoodsService
+    {
+        return new ReceiveGoodsService(
+            $this->purchaseOrderRepository(),
+            $this->receiptNoteRepository(),
+            $this->productRepository()
+        );
+    }
+
+    public function deliverGoodsService(): DeliverGoodsService
+    {
+        return new DeliverGoodsService(
+            $this->salesOrderRepository(),
+            $this->deliveryNoteRepository(),
+            $this->productRepository()
+        );
+    }
+
+    public function productRepository(): ProductRepository
     {
         static $service;
 
         return $service ?: $service = new ProductAggregateRepository($this->eventDispatcher());
     }
 
-    private function purchaseOrderRepository(): PurchaseOrderAggregateRepository
+    public function purchaseOrderRepository(): PurchaseOrderAggregateRepository
     {
         static $service;
 
         return $service ?: $service = new PurchaseOrderAggregateRepository($this->eventDispatcher());
     }
 
-    private function salesOrderRepository(): SalesOrderRepository
+    public function salesOrderRepository(): SalesOrderRepository
     {
         static $service;
 
         return $service ?: $service = new SalesOrderAggregateRepository($this->eventDispatcher());
+    }
+
+    public function receiptNoteRepository(): ReceiptNoteRepository
+    {
+        static $service;
+
+        return $service ?: $service = new ReceiptNoteAggregateRepository($this->eventDispatcher());
+    }
+
+    public function deliveryNoteRepository(): DeliveryNoteRepository
+    {
+        static $service;
+
+        return $service ?: $service = new DeliveryNoteAggregateRepository($this->eventDispatcher());
     }
 
     private function eventDispatcher(): EventDispatcher
@@ -55,8 +91,13 @@ final class ServiceContainer
         if ($service === null) {
             $service = new EventDispatcher();
 
-            // Register your event subscribers here
-            // $service->subscribeToAllEvents(...);
+            // Register your event subscribers here:
+            // $service->registerSubscriber(Event::class, [$subscriberService, 'method']);
+
+            // For debugging purposes:
+            //$service->subscribeToAllEvents(function ($event) {
+            //    dump($event);
+            //});
         }
 
         return $service;

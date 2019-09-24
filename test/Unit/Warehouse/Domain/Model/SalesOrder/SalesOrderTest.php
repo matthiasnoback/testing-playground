@@ -26,9 +26,9 @@ final class SalesOrderTest extends TestCase
 
         self::assertEquals($salesOrderId, $salesOrder->id());
         self::assertCount(2, $salesOrder->lines());
-        self::assertEquals($line1ProductId, $salesOrder->lines()[0]->productId());
-        self::assertEquals($line1Quantity, $salesOrder->lines()[0]->quantity());
-        self::assertEquals($line2ProductId, $salesOrder->lines()[1]->productId());
-        self::assertEquals($line2Quantity, $salesOrder->lines()[1]->quantity());
+        self::assertEquals($line1ProductId, $salesOrder->lines()[(string)$line1ProductId]->productId());
+        self::assertEquals($line1Quantity, $salesOrder->lines()[(string)$line1ProductId]->quantity());
+        self::assertEquals($line2ProductId, $salesOrder->lines()[(string)$line2ProductId]->productId());
+        self::assertEquals($line2Quantity, $salesOrder->lines()[(string)$line2ProductId]->quantity());
     }
 }

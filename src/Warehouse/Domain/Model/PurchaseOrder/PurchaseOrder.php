@@ -8,6 +8,7 @@ use Common\Aggregate;
 use Common\AggregateId;
 use LogicException;
 use Warehouse\Domain\Model\Product\ProductId;
+use function count;
 
 final class PurchaseOrder extends Aggregate
 {
@@ -58,7 +59,7 @@ final class PurchaseOrder extends Aggregate
 
     public function place(): void
     {
-        if (\count($this->lines) === 0) {
+        if (count($this->lines) === 0) {
             throw new LogicException('A purchase order should have at least one line');
         }
 
