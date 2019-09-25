@@ -126,6 +126,13 @@ final class ServiceContainer
         return $service ?: $service = new InMemoryBalanceRepository();
     }
 
+    public function balanceAggregateRepository(): BalanceAggregateRepository
+    {
+        static $service;
+
+        return $service ?: $service = new BalanceAggregateRepository($this->eventDispatcher());
+    }
+
     public function updateBalanceListener(): UpdateBalance
     {
         static $service;
