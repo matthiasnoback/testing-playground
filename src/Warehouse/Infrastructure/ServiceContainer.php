@@ -10,6 +10,7 @@ use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
 use Warehouse\Application\ReceiveGoodsService;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
+use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Product\ProductRepository;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
@@ -95,9 +96,9 @@ final class ServiceContainer
             // $service->registerSubscriber(Event::class, [$subscriberService, 'method']);
 
             // For debugging purposes:
-            //$service->subscribeToAllEvents(function ($event) {
-            //    dump($event);
-            //});
+            $service->subscribeToAllEvents(function ($event) {
+                dump($event);
+            });
         }
 
         return $service;

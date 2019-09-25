@@ -37,6 +37,8 @@ final class DeliveryNote extends Aggregate
     public function addLine(ProductId $productId, $quantity)
     {
         $this->lines[(string)$productId] = new DeliveryNoteLine($productId, $quantity);
+
+        $this->recordThat(new GoodsDelivered($productId, $quantity));
     }
 
     public function id(): AggregateId
