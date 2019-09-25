@@ -27,5 +27,6 @@ final class InMemoryBalanceRepository implements BalanceRepository
     public function save(Balance $balance): void
     {
         $this->balances[(string)$balance->productId()] = $balance;
+//        dump($balance);
     }
 }

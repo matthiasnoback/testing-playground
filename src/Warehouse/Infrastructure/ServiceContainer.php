@@ -9,8 +9,10 @@ use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
 use Warehouse\Application\ReadModel\BalanceRepository;
+use Warehouse\Application\ReadModel\UpdateBalance;
 use Warehouse\Application\ReceiveGoodsService;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
+use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Product\ProductRepository;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
@@ -93,7 +95,10 @@ final class ServiceContainer
             $service = new EventDispatcher();
 
             // Register your event subscribers here:
-            // $service->registerSubscriber(Event::class, [$subscriberService, 'method']);
+            $service->registerSubscriber(
+                ProductCreated::class,
+                [$this->updateBalanceListener(), 'whenProductCreated']
+            );
 
             // For debugging purposes:
             $service->subscribeToAllEvents(function ($event) {
@@ -109,5 +114,12 @@ final class ServiceContainer
         static $service;
 
         return $service ?: $service = new InMemoryBalanceRepository();
+    }
+
+    public function updateBalanceListener(): UpdateBalance
+    {
+        static $service;
+
+        return $service ?: $service = new UpdateBalance($this->balanceRepository());
     }
 }
