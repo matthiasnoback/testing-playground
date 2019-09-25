@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Warehouse\Application;
 
+use RuntimeException;
+use Warehouse\Application\ReadModel\BalanceRepository;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNote;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteId;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
@@ -26,15 +28,21 @@ final class DeliverGoodsService
      * @var ProductRepository
      */
     private $productRepository;
+    /**
+     * @var BalanceRepository
+     */
+    private $balanceRepository;
 
     public function __construct(
         SalesOrderRepository $salesOrderRepository,
         DeliveryNoteRepository $deliverNoteRepository,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        BalanceRepository $balanceRepository
     ) {
         $this->salesOrderRepository = $salesOrderRepository;
         $this->deliveryNoteRepository = $deliverNoteRepository;
         $this->productRepository = $productRepository;
+        $this->balanceRepository = $balanceRepository;
     }
 
     public function deliver(string $salesOrderId): DeliveryNoteId
@@ -47,6 +55,10 @@ final class DeliverGoodsService
 
         foreach ($salesOrder->lines() as $line) {
             $product = $this->productRepository->getById($line->productId());
+
+            if ($this->balanceRepository->getById($line->productId())->quantityInStock() < $line->quantity()) {
+                throw new RuntimeException('This line can not be delivered');
+            }
 
             $deliveryNote->addLine($product->productId(), $line->quantity());
         }

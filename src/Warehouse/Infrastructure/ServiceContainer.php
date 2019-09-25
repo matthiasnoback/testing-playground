@@ -50,7 +50,8 @@ final class ServiceContainer
         return new DeliverGoodsService(
             $this->salesOrderRepository(),
             $this->deliveryNoteRepository(),
-            $this->productRepository()
+            $this->productRepository(),
+            $this->balanceRepository()
         );
     }
 
