@@ -12,8 +12,10 @@ use Warehouse\Application\ReadModel\BalanceRepository;
 use Warehouse\Application\ReadModel\UpdateBalance;
 use Warehouse\Application\ReceiveGoodsService;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
+use Warehouse\Domain\Model\DeliveryNote\GoodsDelivered;
 use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Product\ProductRepository;
+use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
@@ -99,10 +101,18 @@ final class ServiceContainer
                 ProductCreated::class,
                 [$this->updateBalanceListener(), 'whenProductCreated']
             );
+            $service->registerSubscriber(
+                GoodsReceived::class,
+                [$this->updateBalanceListener(), 'whenGoodsReceived']
+            );
+            $service->registerSubscriber(
+                GoodsDelivered::class,
+                [$this->updateBalanceListener(), 'whenGoodsDelivered']
+            );
 
             // For debugging purposes:
             $service->subscribeToAllEvents(function ($event) {
-                dump($event);
+//                dump($event);
             });
         }
 
