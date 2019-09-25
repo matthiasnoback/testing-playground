@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Warehouse\Infrastructure;
 
 use Common\EventDispatcher\EventDispatcher;
+use Warehouse\Application\BalanceProcessManager;
 use Warehouse\Application\CreateProductService;
 use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
@@ -17,6 +18,7 @@ use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Product\ProductRepository;
 use Warehouse\Domain\Model\ReceiptNote\GoodsReceived;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
+use Warehouse\Domain\Model\SalesOrder\SalesOrderLineCreated;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
 
 final class ServiceContainer
@@ -111,9 +113,22 @@ final class ServiceContainer
                 [$this->updateBalanceListener(), 'whenGoodsDelivered']
             );
 
+            $service->registerSubscriber(
+                ProductCreated::class,
+                [$this->balanceProcessManager(), 'whenProductCreated']
+            );
+            $service->registerSubscriber(
+                GoodsReceived::class,
+                [$this->balanceProcessManager(), 'whenGoodsReceived']
+            );
+            $service->registerSubscriber(
+                SalesOrderLineCreated::class,
+                [$this->balanceProcessManager(), 'whenSalesOrderLineCreated']
+            );
+
             // For debugging purposes:
             $service->subscribeToAllEvents(function ($event) {
-//                dump($event);
+                dump($event);
             });
         }
 
@@ -139,5 +154,12 @@ final class ServiceContainer
         static $service;
 
         return $service ?: $service = new UpdateBalance($this->balanceRepository());
+    }
+
+    public function balanceProcessManager(): BalanceProcessManager
+    {
+        static $service;
+
+        return $service ?: $service = new BalanceProcessManager($this->balanceAggregateRepository());
     }
 }

@@ -55,6 +55,13 @@ final class SalesOrder extends Aggregate
         Assertion::false($this->wasPlaced, 'You cannot add lines to an already placed sales order.');
 
         $this->lines[(string)$productId] = new SalesOrderLine($productId, $quantity);
+        $this->recordThat(
+            new SalesOrderLineCreated(
+                $this->salesOrderId,
+                $productId,
+                $quantity
+            )
+        );
     }
 
     public function place(): void
