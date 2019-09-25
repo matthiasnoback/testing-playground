@@ -5,8 +5,11 @@ namespace Test\Acceptance;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use Exception;
 use PHPUnit\Framework\Assert;
+use RuntimeException;
 use Warehouse\Domain\Model\Product\ProductId;
+use Warehouse\Domain\Model\SalesOrder\SalesOrderId;
 use Warehouse\Infrastructure\ServiceContainer;
 
 final class FeatureContext implements Context
@@ -20,6 +23,11 @@ final class FeatureContext implements Context
      * @var ProductId
      */
     private $productId;
+
+    /**
+     * @var SalesOrderId
+     */
+    private $salesOrderId;
 
     /**
      * @BeforeScenario
@@ -85,5 +93,52 @@ final class FeatureContext implements Context
 
         $this->serviceContainer->deliverGoodsService()
             ->deliver((string)$salesOrderId);
+    }
+
+    /**
+     * @When I create a sales order for :quantity items of this product
+     */
+    public function iCreateASalesOrderForItemsOfThisProduct(int $quantity): void
+    {
+        $this->salesOrderId = $this->serviceContainer->placeSalesOrderService()
+            ->place(
+                [
+                    (string)$this->productId => $quantity
+                ]
+            );
+    }
+
+    /**
+     * @Then I can not deliver the sales order
+     */
+    public function iCanNotDeliverTheSalesOrder(): void
+    {
+        $this->expectException(
+            function () {
+                $this->serviceContainer->deliverGoodsService()
+                    ->deliver((string)$this->salesOrderId);
+            },
+            RuntimeException::class,
+            'can not be delivered'
+        );
+    }
+
+    private function expectException(callable $function, string $exceptionClass, string $exceptionMessage): void
+    {
+        try {
+            $function();
+
+            throw new ExpectedAnException();
+        } catch (Exception $exception) {
+            if ($exception instanceof ExpectedAnException) {
+                throw $exception;
+            }
+
+            Assert::assertInstanceOf($exceptionClass, $exception);
+            Assert::assertContains(
+                $exceptionMessage,
+                $exception->getMessage()
+            );
+        }
     }
 }

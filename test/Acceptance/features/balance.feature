@@ -15,7 +15,6 @@ Feature: Stock balancing
     When I deliver 4 items of this product
     Then the balance for this product should be 6
 
-  @ignore
   Scenario: Fail to deliver goods when stock level is insufficient
     Given a product "My product"
     When I create a sales order for 4 items of this product
