@@ -45,7 +45,7 @@ final class DeliverGoodsService
 
         $deliveryNote = new DeliveryNote($deliveryNoteId, $salesOrder->salesOrderId());
 
-        foreach ($deliveryNote->lines() as $line) {
+        foreach ($salesOrder->lines() as $line) {
             $product = $this->productRepository->getById($line->productId());
 
             $deliveryNote->addLine($product->productId(), $line->quantity());
