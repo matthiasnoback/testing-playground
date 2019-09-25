@@ -8,9 +8,9 @@ use Warehouse\Application\CreateProductService;
 use Warehouse\Application\DeliverGoodsService;
 use Warehouse\Application\PlacePurchaseOrderService;
 use Warehouse\Application\PlaceSalesOrderService;
+use Warehouse\Application\ReadModel\BalanceRepository;
 use Warehouse\Application\ReceiveGoodsService;
 use Warehouse\Domain\Model\DeliveryNote\DeliveryNoteRepository;
-use Warehouse\Domain\Model\Product\ProductCreated;
 use Warehouse\Domain\Model\Product\ProductRepository;
 use Warehouse\Domain\Model\ReceiptNote\ReceiptNoteRepository;
 use Warehouse\Domain\Model\SalesOrder\SalesOrderRepository;
@@ -102,5 +102,12 @@ final class ServiceContainer
         }
 
         return $service;
+    }
+
+    public function balanceRepository(): BalanceRepository
+    {
+        static $service;
+
+        return $service ?: $service = new InMemoryBalanceRepository();
     }
 }
