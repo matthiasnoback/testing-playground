@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-bin/composer install
-
 cp .env.dist .env
 echo "HOST_UID=$(id -u)" >> .env
 echo "HOST_GID=$(id -g)" >> .env
+
+bin/composer install
