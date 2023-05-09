@@ -1,7 +1,10 @@
-FROM php:7.2-alpine
-RUN apk add --no-cache $PHPIZE_DEPS --virtual .build-deps \
+FROM php:8.2-alpine
+
+# Install Xdebug
+RUN apk add --no-cache --virtual .build-deps linux-headers $PHPIZE_DEPS \
     && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && apk del .build-deps
+    && apk del .build-deps \
+    && rm -r /tmp/pear/*
+
 COPY xdebug.ini ${PHP_INI_DIR}/conf.d/xdebug.ini
-WORKDIR /opt/project
+WORKDIR /app

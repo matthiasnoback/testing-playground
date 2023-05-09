@@ -11,5 +11,4 @@ install:
   - composer install --prefer-dist
 
 script:
-  - ./run_tests.sh
-  - php examples/domain_events.php
+  - ./test
