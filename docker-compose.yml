@@ -2,17 +2,22 @@ version: '3'
 
 services:
     php:
-        image: matthiasnoback/testing-playground-php:7.2
+        image: matthiasnoback/testing-playground-php:8.2
         build: docker/php/
         volumes:
-            - ./:/opt/project:cached
+            - ./:/app:cached
         environment:
-            XDEBUG_CONFIG: "remote_host=${DOCKER_HOST_NAME_OR_IP}"
+            XDEBUG_CONFIG: "client_host=${DOCKER_HOST_NAME_OR_IP}"
         user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            -   .env
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
 
     composer:
-        image: composer:1.8
+        image: composer:latest
         volumes:
             - ./:/app:cached
-            - ~/.composer:/tmp:cached
         user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            -   .env
