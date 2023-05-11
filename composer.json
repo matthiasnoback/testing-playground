@@ -24,7 +24,7 @@
     "autoload-dev": {
         "psr-4": {
             "Test\\Acceptance\\": "test/Acceptance",
-            "": ["test/Unit", "test/Integration"]
+            "": "test/"
         }
     }
 }
