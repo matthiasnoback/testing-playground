@@ -12,13 +12,30 @@ class Calculator
         int $tax = 0
     ): int
     {
-        $aVariable = 1;
-        if ($discount > 0) {
-            $aVariable = (100 - $discount) / 100;
-        }
-        $totalPrice = $quantity * $pricePerUnit * $aVariable;
-        $totalPrice *= (100 + $tax) / 100;
+        $totalPrice = $quantity * $pricePerUnit;
+        $totalPrice = $this->applyDiscountPercentage($totalPrice, $discount);
+        $totalPrice = $this->applyTaxPercentage($totalPrice, $tax);
 
         return (int) round($totalPrice);
+    }
+
+    private function applyDiscountPercentage(float|int $totalPrice, int $discount): int|float
+    {
+        return $this->applyPercentage($totalPrice, -1 * $discount);
+    }
+
+    private function applyTaxPercentage(float|int $totalPrice, int $tax): int|float
+    {
+        return $this->applyPercentage($totalPrice, $tax);
+    }
+
+    private function applyPercentage(float|int $totalPrice, int $discount): int|float
+    {
+        return $totalPrice * $this->asFactor($discount);
+    }
+
+    private function asFactor(int $percentage): int|float
+    {
+        return (100 + $percentage) / 100;
     }
 }
