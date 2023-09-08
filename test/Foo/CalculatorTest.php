@@ -11,16 +11,21 @@ final class CalculatorTest extends TestCase
     {
         $lastLine = exec('php calculator.php 2 5', $output, $result_code);
         self::assertSame(0, $result_code, implode("\n", $output));
+        self::assertIsString($lastLine);
         self::assertStringContainsString('10', $lastLine);
     }
 
-    public function test_multiply(): void
+    public function test_rounded_multiply(): void
     {
-        $quantity = random_int(1, 100);
-        $amount = (float) (random_int(1, 100) . '.' . random_int(0, 99));
-        $lastLine = exec('php calculator.php ' . $quantity . ' ' . $amount, $output);
-        $result = round($quantity * $amount, 2);
+        $lastLine = exec('php calculator.php 5 10');
 
-        self::assertEquals($result, $lastLine);
+        self::assertEquals('50,00', $lastLine);
+    }
+
+    public function test_input_has_decimals(): void
+    {
+        $lastLine = exec('php calculator.php 5 10,10');
+
+        self::assertEquals('50,50', $lastLine);
     }
 }
