@@ -1,3 +1,9 @@
 <?php
+declare(strict_types=1);
 
-echo 'Hello, world ' . $argv[1];
+$quantity = (int) $argv[1];
+// is het wel een geheel getal? zo niet, exception
+$amount = round((float) $argv[2], 2);
+$result = round($quantity * $amount, 2);
+
+echo $result;
