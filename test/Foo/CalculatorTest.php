@@ -9,8 +9,8 @@ final class CalculatorTest extends TestCase
 {
     public function test_end_to_end(): void
     {
-        $lastLine = exec('php calculator.php', $output, $result_code);
+        $lastLine = exec('php calculator.php wat', $output, $result_code);
         self::assertSame(0, $result_code);
-        self::assertEquals('Hello, world', $lastLine);
+        self::assertEquals('Hello, world wat', $lastLine);
     }
 }

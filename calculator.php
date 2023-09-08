@@ -1,2 +1,3 @@
 <?php
-echo 'Hello, world';
+
+echo 'Hello, world ' . $argv[1];
